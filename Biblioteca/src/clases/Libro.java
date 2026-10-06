@@ -9,6 +9,7 @@ public class Libro {
 	static {
 		correlativo = 0;
 	}
+	public Libro() {}
 
 	public Libro(String titulo, String autor, String isnb, String categoria, int anioPublicacion,
 			int cantidadDisponible, int cantidadTotal, String rutaPortada) {
