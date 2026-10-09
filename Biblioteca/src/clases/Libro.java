@@ -1,8 +1,8 @@
 package clases;
 
 public class Libro {
-	private int id, anioPublicacion, cantidadTotal, cantidadDisponible;
-	private String titulo, autor, isnb, categoria, rutaPortada;
+	private int id, codCategoria, anioPublicacion, cantidadTotal, cantidadDisponible;
+	private String titulo, autor, isnb, rutaPortada;
 
 	private static int correlativo;
 
@@ -11,14 +11,14 @@ public class Libro {
 	}
 	public Libro() {}
 
-	public Libro(String titulo, String autor, String isnb, String categoria, int anioPublicacion,
+	public Libro(String titulo, String autor, String isnb, int codCategoria, int anioPublicacion,
 			int cantidadDisponible, int cantidadTotal, String rutaPortada) {
 		correlativo += 10;
 		this.id = correlativo;
 		this.titulo = titulo;
 		this.autor = autor;
 		this.isnb = isnb;
-		this.categoria = categoria;
+		this.codCategoria = codCategoria;
 		this.anioPublicacion = anioPublicacion;
 		this.cantidadDisponible = cantidadDisponible;
 		this.cantidadTotal = cantidadTotal;
@@ -81,20 +81,20 @@ public class Libro {
 		this.isnb = isnb;
 	}
 
-	public String getCategoria() {
-		return categoria;
-	}
-
-	public void setCategoria(String categoria) {
-		this.categoria = categoria;
-	}
-
 	public String getRutaPortada() {
 		return rutaPortada;
 	}
 
 	public void setRutaPortada(String rutaPortada) {
 		this.rutaPortada = rutaPortada;
+	}
+
+	public int getCodCategoria() {
+		return codCategoria;
+	}
+
+	public void setCodCategoria(int codCategoria) {
+		this.codCategoria = codCategoria;
 	}
 
 }

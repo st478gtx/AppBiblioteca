@@ -118,6 +118,7 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 		getContentPane().add(btnAgregar);
 		
 		btnModificar = new JButton("Modificar");
+		btnModificar.addActionListener(this);
 		btnModificar.setBounds(523, 72, 89, 23);
 		getContentPane().add(btnModificar);
 		
@@ -175,6 +176,9 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	
 	
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnModificar) {
+			actionPerformedBtnModificar(e);
+		}
 		if (e.getSource() == btnLimpiar) {
 			actionPerformedBtnLimpiar(e);
 		}
@@ -302,5 +306,7 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 		txtEmail.setText("");
 		txtFono.setText("");
 		txtEstado.setText("");
+	}
+	protected void actionPerformedBtnModificar(ActionEvent e) {
 	}
 }
