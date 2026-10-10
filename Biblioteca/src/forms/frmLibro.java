@@ -29,6 +29,7 @@ import clases.Categoria;
 import clases.Libro;
 import colecciones.DatosCategoria;
 import colecciones.DatosLibro;
+import util.Constante;
 
 import java.awt.SystemColor;
 import java.awt.event.ActionListener;
@@ -81,6 +82,7 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 	private JButton btnAgregarImagen;
 	private JLabel imgAgregado;
 	private JLabel lblcabecera;
+	private JButton btnLimpiar;
 
 	/**
 	 * Launch the application.
@@ -184,14 +186,15 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 		btnActualizar.addActionListener(this);
 		btnActualizar.setForeground(new Color(255, 153, 51));
 		btnActualizar.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		btnActualizar.setBounds(1065, 132, 89, 23);
+		btnActualizar.setBounds(1065, 181, 89, 23);
 		getContentPane().add(btnActualizar);
 
 		btnEliminar = new JButton("Eliminar");
+		btnEliminar.addActionListener(this);
 		btnEliminar.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		btnEliminar.setForeground(new Color(255, 0, 51));
 		btnEliminar.setBorder(new EmptyBorder(0, 0, 0, 0));
-		btnEliminar.setBounds(1065, 183, 89, 23);
+		btnEliminar.setBounds(1065, 215, 89, 23);
 		getContentPane().add(btnEliminar);
 
 		txtBusqueda = new JTextField();
@@ -235,6 +238,12 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 		imgAgregado.setOpaque(true);
 		imgAgregado.setBackground(new Color(255, 255, 255));
 		imgAgregado.setBounds(779, 74, 120, 180);
+		
+		ImageIcon noImage = new ImageIcon(Constante.SIN_IMAGEN_PORTADA);
+		Image imagen = noImage.getImage().getScaledInstance(130, 140, Image.SCALE_SMOOTH);
+
+		imgAgregado.setIcon(new ImageIcon(imagen));
+		
 		getContentPane().add(imgAgregado);
 
 		lblcabecera = new JLabel("");
@@ -243,11 +252,22 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 		lblcabecera.setBounds(0, 0, 1164, 55);
 		getContentPane().add(lblcabecera);
 
+		btnLimpiar = new JButton("Limpiar");
+		btnLimpiar.addActionListener(this);
+		btnLimpiar.setBounds(1065, 118, 89, 23);
+		getContentPane().add(btnLimpiar);
+
 		cargarCategorias();
 		cargarData();
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnEliminar) {
+			actionPerformedBtnEliminar(e);
+		}
+		if (e.getSource() == btnLimpiar) {
+			actionPerformedBtnLimpiar(e);
+		}
 		if (e.getSource() == btnActualizar) {
 			actionPerformedBtnActualizar(e);
 		}
@@ -280,6 +300,10 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 		if (!guardarImagen()) {
 			return;
 		}
+		
+		if (rutaPortada == "") {
+			rutaPortada = Constante.SIN_IMAGEN_PORTADA;
+		}
 
 		Libro l = new Libro(titulo, autor, isbn, codCategoria, publicacion, cant, total, rutaPortada);
 
@@ -292,7 +316,8 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 		}
 
 		cargarData();
-
+		
+		limpiar();
 	}
 
 	public void cargarData() {
@@ -482,5 +507,35 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 		}
 
 		cargarData();
+		limpiar();
+	}
+
+	void limpiar() {
+		txtCodigo.setText("");
+
+		ImageIcon noImage = new ImageIcon(Constante.SIN_IMAGEN_PORTADA);
+		Image imagen = noImage.getImage().getScaledInstance(130, 140, Image.SCALE_SMOOTH);
+
+		imgAgregado.setIcon(new ImageIcon(imagen));
+		txtTitulo.setText("");
+		txtAutor.setText("");
+		txtIsbn.setText("");
+		cbxCategoria.setSelectedIndex(-1);
+		txtAnioPublicacion.setText("");
+		txtCantDisp.setText("");
+		txtCantidadTotal.setText("");
+		rutaPortada = "";
+	}
+
+	protected void actionPerformedBtnLimpiar(ActionEvent e) {
+		limpiar();
+	}
+	protected void actionPerformedBtnEliminar(ActionEvent e) {
+		
+		String mensaje = dataLibro.eliminar(Integer.parseInt(txtCodigo.getText()));
+		
+		JOptionPane.showMessageDialog(null, mensaje);
+		cargarData();
+		limpiar();
 	}
 }
