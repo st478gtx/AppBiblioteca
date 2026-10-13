@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
+import javax.swing.JComboBox;
 
 
 
@@ -35,13 +36,13 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	private JLabel lblTelefono;
 	private JTextField txtFono;
 	private JLabel lblEstado;
-	private JTextField txtEstado;
 	private JButton btnAgregar;
 	private JButton btnModificar;
 	private JButton btnEliminar;
 	private JButton btnLimpiar;
 	private JScrollPane scrollPane;
 	private JTable tbUsuario;
+	private JComboBox cboEstado;
 	
 	
 
@@ -107,11 +108,6 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 		lblEstado.setBounds(246, 138, 57, 14);
 		getContentPane().add(lblEstado);
 		
-		txtEstado = new JTextField();
-		txtEstado.setBounds(289, 135, 168, 20);
-		getContentPane().add(txtEstado);
-		txtEstado.setColumns(10);
-		
 		btnAgregar = new JButton("Agregar");
 		btnAgregar.addActionListener(this);
 		btnAgregar.setBounds(523, 28, 89, 23);
@@ -146,7 +142,12 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 			}
 		));
 		scrollPane.setViewportView(tbUsuario);
+		
+		cboEstado = new JComboBox();
+		cboEstado.setBounds(289, 134, 168, 22);
+		getContentPane().add(cboEstado);
 		cargarUsuario();
+		listarEstado();
 		
 	}
 	
@@ -167,11 +168,17 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
         txtDni.setText("");
         txtEmail.setText("");
         txtFono.setText("");
-        txtEstado.setText("");
+        cboEstado.setSelectedIndex(-1);
         txtNombres.requestFocus();
     }	
 	
-	
+	void listarEstado() {
+	    cboEstado.removeAllItems(); // Limpia por si acaso tiene elementos previos
+	    cboEstado.addItem("-- Seleccione --");
+	    cboEstado.addItem("Registrado");
+	    cboEstado.addItem("Con Prestamo");
+	    cboEstado.addItem("Penalizado");
+	}
 	
 	
 	
@@ -195,7 +202,7 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	    String dni = txtDni.getText().trim();
 	    String email = txtEmail.getText().trim();
 	    String fono = txtFono.getText().trim();
-	    String estado = txtEstado.getText().trim();
+	    String estado = cboEstado.getSelectedItem().toString();
 
 	    // 2. Validar que no haya campos vacíos
 	    if (nombres.isEmpty() || dni.isEmpty() || email.isEmpty() || fono.isEmpty() || estado.isEmpty()) {
@@ -260,7 +267,7 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 				txtDni.setText(tbUsuario.getValueAt(i, 2).toString());
 				txtEmail.setText(tbUsuario.getValueAt(i, 3).toString());
 				txtFono.setText(tbUsuario.getValueAt(i, 4).toString());
-				txtEstado.setText(tbUsuario.getValueAt(i, 5).toString());
+				cboEstado.setSelectedItem(tbUsuario.getValueAt(i, 5).toString());
 		
 		
 	}
@@ -276,14 +283,14 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	    // 2. Obtener el objeto usuario para validar su estado
 	    Usuario u = frmPrincipal.usuarios.obtener(posFila);
 
-	    // 3. Validar que el estado sea "0"
-	    if (!u.estadoUser.trim().equals("0")) {
-	        JOptionPane.showMessageDialog(this, "Solo se pueden eliminar los usuarios que se encuentren en estado 0.", "Restricción de eliminación", JOptionPane.WARNING_MESSAGE);
+	    // 3. Validar que el estado sea exactamente "Registrado"
+	    if (!u.estadoUser.trim().equalsIgnoreCase("Registrado")) {
+	        JOptionPane.showMessageDialog(this, "Solo se pueden eliminar los usuarios que se encuentren en estado Registrado.", "Restricción de eliminación", JOptionPane.WARNING_MESSAGE);
 	        return;
 	    }
 
 	    // 4. Pedir confirmación
-	    int ok = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este usuario en estado 0?", "Confirmación", JOptionPane.YES_NO_OPTION);
+	    int ok = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este usuario?", "Confirmación", JOptionPane.YES_NO_OPTION);
 	    if (ok == JOptionPane.YES_OPTION) {
 	        // Obtener el código de la columna 0 de la tabla (ej. "U1001")
 	        String codUser = tbUsuario.getValueAt(posFila, 0).toString();
@@ -305,8 +312,81 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 		txtDni.setText("");
 		txtEmail.setText("");
 		txtFono.setText("");
-		txtEstado.setText("");
+		cboEstado.setSelectedItem(null);
 	}
 	protected void actionPerformedBtnModificar(ActionEvent e) {
+		
+		// 1. Obtener la fila seleccionada en la tabla
+	    int fila = tbUsuario.getSelectedRow();
+	    
+	    if (fila == -1) {
+	        JOptionPane.showMessageDialog(null, "Debe seleccionar un usuario de la tabla.");
+	        return;
+	    }
+	    
+	 // 2. Extraer los datos de los campos de texto
+	    String nombres = txtNombres.getText().trim();
+	    String dni = txtDni.getText().trim();
+	    String fono = txtFono.getText().trim();
+	    
+	    // --- VALIDACIONES ---
+	    
+	    // Validar Nombres: Solo letras y espacios (incluye tildes y ñ)
+	    if (nombres.isEmpty()) {
+	        JOptionPane.showMessageDialog(null, "El campo Nombres no puede estar vacío.", "Error", JOptionPane.ERROR_MESSAGE);
+	        txtNombres.requestFocus();
+	        return;
+	    }
+	    if (!nombres.matches("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]+$")) {
+	        JOptionPane.showMessageDialog(null, "El campo Nombres solo debe contener letras.", "Error", JOptionPane.ERROR_MESSAGE);
+	        txtNombres.requestFocus();
+	        return;
+	    }
+	    
+	    // Validar DNI: Exactamente 8 dígitos numéricos
+	    if (!dni.matches("^\\d{8}$")) {
+	        JOptionPane.showMessageDialog(null, "El DNI debe tener exactamente 8 dígitos.", "Error", JOptionPane.ERROR_MESSAGE);
+	        txtDni.requestFocus();
+	        return;
+	    }
+	    
+	    // Validar Celular: Empieza con 9 y tiene exactamente 9 dígitos
+	    if (!fono.matches("^9\\d{8}$")) {
+	        JOptionPane.showMessageDialog(null, "El celular debe empezar con '9' y tener 9 dígitos.", "Error", JOptionPane.ERROR_MESSAGE);
+	        txtFono.requestFocus();
+	        return;
+	    }
+	    
+	    // Validar ComboBox: Asegurar que se haya seleccionado una opción válida 
+	    // (Asumiendo que el índice 0 es un texto como "-- Seleccione --")
+	    if (cboEstado.getSelectedIndex() <= 0) {
+	        JOptionPane.showMessageDialog(null, "Debe seleccionar una opción válida en el estado.", "Error", JOptionPane.ERROR_MESSAGE);
+	        cboEstado.requestFocus();
+	        return;
+	    }
+	    
+	    
+	    
+	    // Extraer el código de la primera columna (columna 0) y asignarlo
+	    String codigoSeleccionado = tbUsuario.getValueAt(fila, 0).toString();
+	    
+	    
+	    
+	    
+		Usuario u=new Usuario();
+		u.codUser = codigoSeleccionado;
+		u.nomUser=txtNombres.getText();
+		u.dniUser=txtDni.getText();
+		u.emailUser=txtEmail.getText();
+		u.fonoUser=txtFono.getText();
+		u.estadoUser=cboEstado.getSelectedItem().toString();
+
+		String mensaje = frmPrincipal.usuarios.actualizar(u);
+		JOptionPane.showMessageDialog(null, mensaje);
+
+		cargarUsuario();		
 	}
+	
+
+	
 }
