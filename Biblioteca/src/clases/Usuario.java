@@ -19,9 +19,25 @@ public class Usuario {
 		this.estadoUser = estadoUser;
 
 	}
+	
+	public Usuario(String codUser,String nomUser, String dniUser, String emailUser , String fonoUser, String estadoUser) {
+		
+		this.codUser=nomUser;
+		this.nomUser = nomUser;
+		this.dniUser = dniUser;
+		this.emailUser = emailUser;
+		this.fonoUser = fonoUser;
+		this.estadoUser = estadoUser;
+		correlativo+=1;
 
+	}
+		
+	
+	
+	
+	
 	public Usuario() {
-		// TODO Auto-generated constructor stub
+	
 	}
 
 

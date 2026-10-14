@@ -21,6 +21,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import javax.swing.JComboBox;
+import java.awt.Font;
 
 
 
@@ -43,6 +44,8 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	private JScrollPane scrollPane;
 	private JTable tbUsuario;
 	private JComboBox cboEstado;
+	private JButton btnGuardar;
+	private JLabel lblTitulo;
 	
 	
 
@@ -65,71 +68,71 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	 */
 	public frmUsuario() {
 		setTitle("Mantenimiento de Usuario");
-		setBounds(100, 100, 748, 535);
+		setBounds(100, 100, 748, 640);
 		getContentPane().setLayout(null);
 		
 		lblNombres = new JLabel("Nombres");
-		lblNombres.setBounds(25, 51, 57, 14);
+		lblNombres.setBounds(37, 103, 57, 14);
 		getContentPane().add(lblNombres);
 		
 		lblDNI = new JLabel("DNI");
-		lblDNI.setBounds(25, 90, 46, 14);
+		lblDNI.setBounds(37, 142, 46, 14);
 		getContentPane().add(lblDNI);
 		
 		lblEmail = new JLabel("Email");
-		lblEmail.setBounds(246, 90, 46, 14);
+		lblEmail.setBounds(258, 142, 46, 14);
 		getContentPane().add(lblEmail);
 		
 		txtNombres = new JTextField();
-		txtNombres.setBounds(85, 48, 372, 20);
+		txtNombres.setBounds(97, 100, 372, 20);
 		getContentPane().add(txtNombres);
 		txtNombres.setColumns(10);
 		
 		txtDni = new JTextField();
-		txtDni.setBounds(84, 88, 110, 20);
+		txtDni.setBounds(96, 140, 110, 20);
 		getContentPane().add(txtDni);
 		txtDni.setColumns(10);
 		
 		txtEmail = new JTextField();
-		txtEmail.setBounds(289, 87, 168, 20);
+		txtEmail.setBounds(301, 139, 168, 20);
 		getContentPane().add(txtEmail);
 		txtEmail.setColumns(10);
 		
 		lblTelefono = new JLabel("Telefono");
-		lblTelefono.setBounds(25, 138, 57, 14);
+		lblTelefono.setBounds(37, 190, 57, 14);
 		getContentPane().add(lblTelefono);
 		
 		txtFono = new JTextField();
-		txtFono.setBounds(86, 135, 108, 20);
+		txtFono.setBounds(98, 187, 108, 20);
 		getContentPane().add(txtFono);
 		txtFono.setColumns(10);
 		
 		lblEstado = new JLabel("Estado");
-		lblEstado.setBounds(246, 138, 57, 14);
+		lblEstado.setBounds(258, 190, 57, 14);
 		getContentPane().add(lblEstado);
 		
 		btnAgregar = new JButton("Agregar");
 		btnAgregar.addActionListener(this);
-		btnAgregar.setBounds(523, 28, 89, 23);
+		btnAgregar.setBounds(529, 84, 121, 23);
 		getContentPane().add(btnAgregar);
 		
 		btnModificar = new JButton("Modificar");
 		btnModificar.addActionListener(this);
-		btnModificar.setBounds(523, 72, 89, 23);
+		btnModificar.setBounds(529, 118, 121, 23);
 		getContentPane().add(btnModificar);
 		
 		btnEliminar = new JButton("Eliminar");
 		btnEliminar.addActionListener(this);
-		btnEliminar.setBounds(523, 119, 89, 23);
+		btnEliminar.setBounds(529, 152, 121, 23);
 		getContentPane().add(btnEliminar);
 		
 		btnLimpiar = new JButton("Limpiar");
 		btnLimpiar.addActionListener(this);
-		btnLimpiar.setBounds(523, 166, 89, 23);
+		btnLimpiar.setBounds(529, 185, 121, 23);
 		getContentPane().add(btnLimpiar);
 		
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(25, 211, 681, 260);
+		scrollPane.setBounds(25, 276, 681, 287);
 		getContentPane().add(scrollPane);
 		
 		tbUsuario = new JTable();
@@ -144,8 +147,18 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 		scrollPane.setViewportView(tbUsuario);
 		
 		cboEstado = new JComboBox();
-		cboEstado.setBounds(289, 134, 168, 22);
+		cboEstado.setBounds(301, 186, 168, 22);
 		getContentPane().add(cboEstado);
+		
+		btnGuardar = new JButton("Guardar datos");
+		btnGuardar.addActionListener(this);
+		btnGuardar.setBounds(529, 219, 121, 23);
+		getContentPane().add(btnGuardar);
+		
+		lblTitulo = new JLabel("Mantenimiento de usuario");
+		lblTitulo.setFont(new Font("Tahoma", Font.BOLD, 24));
+		lblTitulo.setBounds(212, 22, 326, 45);
+		getContentPane().add(lblTitulo);
 		cargarUsuario();
 		listarEstado();
 		
@@ -183,6 +196,9 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	
 	
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnGuardar) {
+			actionPerformedBtnGuardar(e);
+		}
 		if (e.getSource() == btnModificar) {
 			actionPerformedBtnModificar(e);
 		}
@@ -237,8 +253,14 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	        txtFono.requestFocus();
 	        return;
 	    }
-
-	    // 7. Guardar los datos si pasa todas las validaciones
+	    // 7. Validar Teléfono (9 dígitos)
+	    if (cboEstado.getSelectedIndex() == 0) {
+	        JOptionPane.showMessageDialog(this, "Por favor seleccione un estado", "Advertencia", JOptionPane.WARNING_MESSAGE);
+	        cboEstado.requestFocus(); // Coloca el foco en el combo box
+	        return; // Detiene la ejecución para que no continúe guardando
+	    }
+	    
+	    // 8. Guardar los datos si pasa todas las validaciones
 	    Usuario reg = new Usuario(nombres, dni, email, fono, estado);
 	    
 	    String mensaje = frmPrincipal.usuarios.agregar(reg);
@@ -386,7 +408,11 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 
 		cargarUsuario();		
 	}
-	
-
-	
+	protected void actionPerformedBtnGuardar(ActionEvent e) {
+		
+		String mensaje=frmPrincipal.usuarios.guardar();
+		JOptionPane.showMessageDialog(null, mensaje);
+		
+		
+	}
 }
