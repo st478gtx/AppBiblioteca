@@ -23,10 +23,10 @@ public class DatosCategoria {
 		return categorias.get(i);
 	}
 
-	public String obtenerNombreCategoria(int codCategoria) {
+	public String obtenerNombreCategoria(String codCategoria) {
 
 		for (int i = 0; i < longitud(); i++) {
-			if (obtener(i).getCodCategoria() == codCategoria) {
+			if (obtener(i).getCodCategoria().equals(codCategoria)) {
 				return obtener(i).getNombre();
 			}
 		}
@@ -34,12 +34,12 @@ public class DatosCategoria {
 		return "Sin categoría";
 	}
 
-	public int obtenerCodCategoria(String nombre) {
+	public String obtenerCodCategoria(String nombre) {
 		for (int i = 0; i < longitud(); i++) {
 			if (obtener(i).getNombre() == nombre) {
 				return obtener(i).getCodCategoria();
 			}
 		}
-		return -1;
+		return "";
 	}
 }

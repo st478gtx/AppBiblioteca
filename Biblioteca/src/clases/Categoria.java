@@ -1,7 +1,7 @@
 package clases;
 
 public class Categoria {
-	private int codCategoria;
+	private String codCategoria;
 	private String nombre;
 
 	private static int correlativo;
@@ -14,16 +14,16 @@ public class Categoria {
 	}
 
 	public Categoria(String nombre) {
-		correlativo ++;
-		this.codCategoria = correlativo;
+		correlativo +=10;
+		this.codCategoria = "C" + correlativo;
 		this.nombre = nombre;
 	}
 
-	public int getCodCategoria() {
+	public String getCodCategoria() {
 		return codCategoria;
 	}
 
-	public void setCodCategoria(int codCategoria) {
+	public void setCodCategoria(String codCategoria) {
 		this.codCategoria = codCategoria;
 	}
 

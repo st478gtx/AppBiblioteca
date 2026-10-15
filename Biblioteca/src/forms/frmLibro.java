@@ -238,12 +238,12 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 		imgAgregado.setOpaque(true);
 		imgAgregado.setBackground(new Color(255, 255, 255));
 		imgAgregado.setBounds(779, 74, 120, 180);
-		
+
 		ImageIcon noImage = new ImageIcon(Constante.SIN_IMAGEN_PORTADA);
 		Image imagen = noImage.getImage().getScaledInstance(130, 140, Image.SCALE_SMOOTH);
 
 		imgAgregado.setIcon(new ImageIcon(imagen));
-		
+
 		getContentPane().add(imgAgregado);
 
 		lblcabecera = new JLabel("");
@@ -289,35 +289,36 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 
 		Categoria categoria = (Categoria) cbxCategoria.getSelectedItem();
 
-		String titulo = txtTitulo.getText();
-		String autor = txtAutor.getText();
-		String isbn = txtIsbn.getText();
-		int publicacion = Integer.parseInt(txtAnioPublicacion.getText());
-		int codCategoria = categoria.getCodCategoria();
-		int cant = Integer.parseInt(txtCantDisp.getText());
-		int total = Integer.parseInt(txtCantidadTotal.getText());
+		try {
+			String titulo = txtTitulo.getText();
+			String autor = txtAutor.getText();
+			String isbn = txtIsbn.getText();
+			int publicacion = Integer.parseInt(txtAnioPublicacion.getText());
+			String codCategoria = categoria.getCodCategoria();
+			int cant = Integer.parseInt(txtCantDisp.getText());
+			int total = Integer.parseInt(txtCantidadTotal.getText());
 
-		if (!guardarImagen()) {
-			return;
-		}
-		
-		if (rutaPortada == "") {
-			rutaPortada = Constante.SIN_IMAGEN_PORTADA;
-		}
+			if (!guardarImagen()) {
+				return;
+			}
 
-		Libro l = new Libro(titulo, autor, isbn, codCategoria, publicacion, cant, total, rutaPortada);
+			if (rutaPortada == "") {
+				rutaPortada = Constante.SIN_IMAGEN_PORTADA;
+			}
 
-		String mensaje = dataLibro.agregar(l);
+			Libro l = new Libro(titulo, autor, isbn, codCategoria, publicacion, cant, total, rutaPortada);
 
-		if (l.getId() == 0) {
+			String mensaje = dataLibro.agregar(l);
+
 			JOptionPane.showMessageDialog(null, mensaje);
-		} else {
-			JOptionPane.showMessageDialog(null, mensaje);
+
+			cargarData();
+
+			limpiar();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
 		}
 
-		cargarData();
-		
-		limpiar();
 	}
 
 	public void cargarData() {
@@ -357,7 +358,7 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 			Libro l = data.get(i);
 			String c = dataCategoria.obtenerNombreCategoria(l.getCodCategoria());
 
-			Object[] fila = { l.getRutaPortada(), l.getId(), l.getTitulo(), l.getAutor(), l.getIsnb(), c,
+			Object[] fila = { l.getRutaPortada(), l.getCodLibro(), l.getTitulo(), l.getAutor(), l.getIsnb(), c,
 					l.getAnioPublicacion(), l.getCantidadDisponible(), l.getCantidadTotal()
 
 			};
@@ -480,34 +481,35 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 	}
 
 	protected void actionPerformedBtnActualizar(ActionEvent e) {
+		try {
+			Libro l = new Libro();
 
-		Libro l = new Libro();
+			Categoria categoria = (Categoria) cbxCategoria.getSelectedItem();
 
-		Categoria categoria = (Categoria) cbxCategoria.getSelectedItem();
+			l.setCodLibro(txtCodigo.getText());
+			l.setRutaPortada(rutaPortada);
+			l.setTitulo(txtTitulo.getText());
+			l.setAutor(txtAutor.getText());
+			l.setIsnb(txtIsbn.getText());
+			l.setAnioPublicacion(Integer.parseInt(txtAnioPublicacion.getText()));
+			l.setCodCategoria(categoria.getCodCategoria());
+			l.setCantidadDisponible(Integer.parseInt(txtCantDisp.getText()));
+			l.setCantidadTotal(Integer.parseInt(txtCantidadTotal.getText()));
 
-		l.setId(Integer.parseInt(txtCodigo.getText()));
-		l.setRutaPortada(rutaPortada);
-		l.setTitulo(txtTitulo.getText());
-		l.setAutor(txtAutor.getText());
-		l.setIsnb(txtIsbn.getText());
-		l.setAnioPublicacion(Integer.parseInt(txtAnioPublicacion.getText()));
-		l.setCodCategoria(categoria.getCodCategoria());
-		l.setCantidadDisponible(Integer.parseInt(txtCantDisp.getText()));
-		l.setCantidadTotal(Integer.parseInt(txtCantidadTotal.getText()));
+			if (!guardarImagen()) {
+				return;
+			}
 
-		if (!guardarImagen()) {
-			return;
-		}
+			String mensaje = dataLibro.actualizar(l);
 
-		String mensaje = dataLibro.actualizar(l);
-		if (l.getId() == 0) {
 			JOptionPane.showMessageDialog(null, mensaje);
-		} else {
-			JOptionPane.showMessageDialog(null, mensaje);
-		}
 
-		cargarData();
-		limpiar();
+			cargarData();
+			limpiar();
+
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		}
 	}
 
 	void limpiar() {
@@ -530,10 +532,11 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 	protected void actionPerformedBtnLimpiar(ActionEvent e) {
 		limpiar();
 	}
+
 	protected void actionPerformedBtnEliminar(ActionEvent e) {
-		
-		String mensaje = dataLibro.eliminar(Integer.parseInt(txtCodigo.getText()));
-		
+
+		String mensaje = dataLibro.eliminar(txtCodigo.getText());
+
 		JOptionPane.showMessageDialog(null, mensaje);
 		cargarData();
 		limpiar();
