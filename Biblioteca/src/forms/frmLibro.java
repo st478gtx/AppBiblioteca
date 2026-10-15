@@ -70,10 +70,11 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 	private DefaultTableModel modelo;
 	JFileChooser fileChooser = new JFileChooser();
 
-	public static DatosLibro dataLibro = new DatosLibro();
-	public static DatosCategoria dataCategoria = new DatosCategoria();
+	// Cargar data de form principal
+	public DatosLibro dataLibro = frmPrincipal.dataLibro;
+	public DatosCategoria dataCategoria = frmPrincipal.dataCategoria;
 
-	private String rutaPortada;
+	private String rutaPortada = "";
 
 	private JTextField txtCodigo;
 	private JLabel lblCodigo;
@@ -312,9 +313,12 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 
 			JOptionPane.showMessageDialog(null, mensaje);
 
+			dataLibro.guardar();
+
 			cargarData();
 
 			limpiar();
+			
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage());
 		}
@@ -504,7 +508,10 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 
 			JOptionPane.showMessageDialog(null, mensaje);
 
+			dataLibro.guardar();
+
 			cargarData();
+			
 			limpiar();
 
 		} catch (Exception ex) {
@@ -535,10 +542,19 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 
 	protected void actionPerformedBtnEliminar(ActionEvent e) {
 
-		String mensaje = dataLibro.eliminar(txtCodigo.getText());
+		try {
 
-		JOptionPane.showMessageDialog(null, mensaje);
-		cargarData();
-		limpiar();
+			String mensaje = dataLibro.eliminar(txtCodigo.getText());
+
+			JOptionPane.showMessageDialog(null, mensaje);
+
+			dataLibro.guardar();
+
+			cargarData();
+
+			limpiar();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		}
 	}
 }

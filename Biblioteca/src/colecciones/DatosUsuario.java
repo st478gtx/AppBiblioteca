@@ -68,7 +68,7 @@ public class DatosUsuario {
 		else {
 			try {
 				//crear el archivo usuarios.txt para escribir
-				PrintWriter usuario=new PrintWriter(new FileWriter("C:\\PrestamosFile\\usuarios.txt"));
+				PrintWriter usuario=new PrintWriter(new FileWriter("datos\\usuarios.txt"));
 				for(int i=0; i<longitud(); i++) {
 					//recupero el usuario a traves de su ubicacion en i
 					Usuario x=obtener(i);
@@ -90,7 +90,7 @@ public class DatosUsuario {
 		usuarios.clear(); // Limpiamos la lista antes de cargar para evitar duplicados
 		try {
 			//abrir el archivo usuarios.txt para leer
-			BufferedReader usuario=new BufferedReader(new FileReader("C:\\PrestamosFile\\usuarios.txt"));
+			BufferedReader usuario=new BufferedReader(new FileReader("datos\\usuarios.txt"));
 			String linea;
 			//mientras que al leer la linea sea diferente a null
 			while((linea=usuario.readLine())!=null)

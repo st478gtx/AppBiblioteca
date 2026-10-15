@@ -1,0 +1,5 @@
+C10;Ciencia ficción
+C20;Fantasía
+C30;Literatura
+C40;Novela
+C50;Romance

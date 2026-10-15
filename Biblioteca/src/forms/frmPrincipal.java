@@ -44,6 +44,8 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	/* publicar todos los arreglos de alcance static */
 	public static DatosUsuario usuarios = new DatosUsuario();
 	public static DatosLibro dataLibro = new DatosLibro();
+	public static DatosCategoria dataCategoria = new DatosCategoria();
+	
 	private JMenuBar menuBar;
 	private JMenu mnMantenimiento;
 	private JMenuItem mntmUsuario;
@@ -53,7 +55,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	private JTextField txtBusqueda;
 	private JButton btnBuscar;
 	private JScrollPane scrollPane;
-	private JPanel panelEstanteria;
+	private JPanel panelEstanteria;	
 
 	/**
 	 * Launch the application.
@@ -99,6 +101,8 @@ public class frmPrincipal extends JFrame implements ActionListener {
 
 		mntmCategoria = new JMenuItem("Categoría");
 		mnMantenimiento.add(mntmCategoria);
+		
+		mntmCategoria.addActionListener(e -> mostrarMatenimientoCategorias());
 
 		mntmLibro = new JMenuItem("Libro");
 
@@ -152,6 +156,12 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		frmUsuario usuario = new frmUsuario();
 		usuario.setLocationRelativeTo(null);
 		usuario.setVisible(true);
+	}
+	
+	public void mostrarMatenimientoCategorias() {
+		frmCategoria categoria = new frmCategoria();
+		categoria.setLocationRelativeTo(null);
+		categoria.setVisible(true);
 	}
 
 	public void cargarRepisa(String buscar) {

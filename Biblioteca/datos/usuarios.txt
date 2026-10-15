@@ -1,0 +1,10 @@
+Mario Quispe;Mario Quispe;75896258;mario@gmail.com;90098789;Con Prestamo
+Carlos Mendoza;Carlos Mendoza;20587425;cm@gmail.com;987789098;Penalizado
+Gabriel Soto;Gabriel Soto;69325985;ggm@gmail.com;97867567;Con Prestamo
+Cesar Altamirano;Cesar Altamirano;66320120;caltamirano@gmail.com;987000988;Con Prestamo
+Maria Garcia;Maria Garcia;41250330;mariag@gmail.com;99088780;Penalizado
+Carla Martinez;Carla Martinez;04852111;carlam@gmail.com;900781018;Con Prestamo
+Gabriela Gomez;Gabriela Gomez;74660521;gabrielagm@gmail.com;908675557;Con Prestamo
+Kenyi Farfan;Kenyi Farfan;12241500;kfarfan@gmail.com;937303988;Registrado
+Silvia Benavides;Silvia Benavides;85655820;sbenavides@gmail.com;963867947;Registrado
+Sofia Rios;Sofia Rios;84553001;sofir@gmail.com;981000248;Registrado

@@ -9,7 +9,9 @@ public class Libro {
 	static {
 		correlativo = 0;
 	}
-	public Libro() {}
+
+	public Libro() {
+	}
 
 	public Libro(String titulo, String autor, String isnb, String codCategoria, int anioPublicacion,
 			int cantidadDisponible, int cantidadTotal, String rutaPortada) {
@@ -23,6 +25,20 @@ public class Libro {
 		this.cantidadDisponible = cantidadDisponible;
 		this.cantidadTotal = cantidadTotal;
 		this.rutaPortada = rutaPortada;
+	}
+
+	public Libro(String codLibro, String titulo, String autor, String isnb, String codCategoria, int anioPublicacion,
+			int cantidadDisponible, int cantidadTotal, String rutaPortada) {
+		this.codLibro = codLibro;
+		this.titulo = titulo;
+		this.autor = autor;
+		this.isnb = isnb;
+		this.codCategoria = codCategoria;
+		this.anioPublicacion = anioPublicacion;
+		this.cantidadDisponible = cantidadDisponible;
+		this.cantidadTotal = cantidadTotal;
+		this.rutaPortada = rutaPortada;
+		correlativo += 10;
 	}
 
 	public int getAnioPublicacion() {
