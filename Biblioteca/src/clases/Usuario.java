@@ -44,5 +44,9 @@ public class Usuario {
 	
 	}
 
+	@Override
+	public String toString() {
+		return nomUser;
+	}
 
 }

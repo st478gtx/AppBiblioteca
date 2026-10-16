@@ -5,13 +5,19 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.MaskFormatter;
 
+import clases.Categoria;
+import clases.DetalleLibro;
 import clases.Libro;
+import clases.Usuario;
 import colecciones.*;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.event.MouseListener;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.awt.event.MouseEvent;
 import javax.swing.UIManager;
 import javax.swing.JLabel;
@@ -35,6 +41,8 @@ import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 
 public class frmPrincipal extends JFrame implements ActionListener {
 
@@ -45,7 +53,9 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	public static DatosUsuario usuarios = new DatosUsuario();
 	public static DatosLibro dataLibro = new DatosLibro();
 	public static DatosCategoria dataCategoria = new DatosCategoria();
-	
+
+	public DatosLibroDetalle agregados = new DatosLibroDetalle();
+
 	private JMenuBar menuBar;
 	private JMenu mnMantenimiento;
 	private JMenuItem mntmUsuario;
@@ -55,7 +65,18 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	private JTextField txtBusqueda;
 	private JButton btnBuscar;
 	private JScrollPane scrollPane;
-	private JPanel panelEstanteria;	
+	private JPanel panelEstanteria;
+	private JComboBox<Usuario> cbxUsuario;
+	private JLabel lblNewLabel;
+	private JLabel lblNewLabel_1;
+	private JFormattedTextField txtFechaPrestamo;
+	private JLabel lblNewLabel_2;
+	private JFormattedTextField txtFechaDevolucion;
+	private JButton btnEjecutarPrestamo;
+	private JScrollPane scrollPane_1;
+	private JLabel lblNewLabel_3;
+	private JPanel panelAgregado;
+	private JLabel lblContadorAgregado;
 
 	/**
 	 * Launch the application.
@@ -86,7 +107,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		setResizable(false);
 		setTitle("Biblioteca");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1173, 736);
+		setBounds(100, 100, 1173, 786);
 
 		menuBar = new JMenuBar();
 		setJMenuBar(menuBar);
@@ -101,7 +122,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 
 		mntmCategoria = new JMenuItem("Categoría");
 		mnMantenimiento.add(mntmCategoria);
-		
+
 		mntmCategoria.addActionListener(e -> mostrarMatenimientoCategorias());
 
 		mntmLibro = new JMenuItem("Libro");
@@ -114,10 +135,10 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 
-		btnBuscar = new JButton("Buscar");
+		btnBuscar = new JButton("Buscar libros");
 		btnBuscar.addActionListener(this);
 		btnBuscar.setBorder(null);
-		btnBuscar.setBounds(770, 16, 89, 23);
+		btnBuscar.setBounds(770, 16, 126, 23);
 		contentPane.add(btnBuscar);
 
 		txtBusqueda = new JTextField();
@@ -134,7 +155,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		contentPane.add(lblCabecera);
 
 		scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 66, 942, 598);
+		scrollPane.setBounds(10, 144, 942, 530);
 		contentPane.add(scrollPane);
 
 		panelEstanteria = new JPanel();
@@ -143,6 +164,66 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		cargarRepisa("");
 
 		scrollPane.setViewportView(panelEstanteria);
+
+		cbxUsuario = new JComboBox<>();
+		cbxUsuario.setBounds(133, 90, 161, 22);
+		contentPane.add(cbxUsuario);
+
+		agregarUsuariosCombo();
+
+		lblNewLabel = new JLabel("Usuarios registrados");
+		lblNewLabel.setBounds(23, 94, 116, 14);
+		contentPane.add(lblNewLabel);
+
+		lblNewLabel_1 = new JLabel("Fecha préstamo");
+		lblNewLabel_1.setBounds(367, 94, 77, 14);
+		contentPane.add(lblNewLabel_1);
+
+		MaskFormatter mascaraFecha;
+		try {
+			mascaraFecha = new MaskFormatter("##/##/####");
+			mascaraFecha.setPlaceholderCharacter('_');
+
+			txtFechaPrestamo = new JFormattedTextField(mascaraFecha);
+
+			txtFechaDevolucion = new JFormattedTextField(mascaraFecha);
+
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
+
+		txtFechaPrestamo.setBounds(468, 91, 89, 20);
+		contentPane.add(txtFechaPrestamo);
+
+		lblNewLabel_2 = new JLabel("Fecha devolución");
+		lblNewLabel_2.setBounds(655, 94, 103, 14);
+		contentPane.add(lblNewLabel_2);
+
+		txtFechaDevolucion.setBounds(768, 91, 77, 20);
+		contentPane.add(txtFechaDevolucion);
+
+		btnEjecutarPrestamo = new JButton("Realizar préstamo");
+		btnEjecutarPrestamo.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		btnEjecutarPrestamo.setBounds(965, 81, 151, 36);
+		contentPane.add(btnEjecutarPrestamo);
+
+		scrollPane_1 = new JScrollPane();
+		scrollPane_1.setBounds(965, 215, 182, 459);
+		contentPane.add(scrollPane_1);
+
+		panelAgregado = new JPanel();
+		scrollPane_1.setViewportView(panelAgregado);
+		panelAgregado.setLayout(new BoxLayout(panelAgregado, BoxLayout.Y_AXIS));
+
+		lblNewLabel_3 = new JLabel("Seleccionados");
+		lblNewLabel_3.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNewLabel_3.setBounds(969, 189, 94, 14);
+		contentPane.add(lblNewLabel_3);
+
+		lblContadorAgregado = new JLabel("");
+		lblContadorAgregado.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lblContadorAgregado.setBounds(1101, 191, 46, 14);
+		contentPane.add(lblContadorAgregado);
 
 	}
 
@@ -157,7 +238,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		usuario.setLocationRelativeTo(null);
 		usuario.setVisible(true);
 	}
-	
+
 	public void mostrarMatenimientoCategorias() {
 		frmCategoria categoria = new frmCategoria();
 		categoria.setLocationRelativeTo(null);
@@ -169,14 +250,14 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		var filtroLibro = dataLibro.buscar(txtBusqueda.getText());
 
 		for (int i = 0; i < filtroLibro.size(); i++) {
-			panelEstanteria.add(cardAlimento(filtroLibro.get(i)));
+			panelEstanteria.add(cardLibro(filtroLibro.get(i)));
 		}
-		
+
 		panelEstanteria.revalidate();
 		panelEstanteria.repaint();
 	}
 
-	public JPanel cardAlimento(Libro libro) {
+	public JPanel cardLibro(Libro libro) {
 		JPanel card = new JPanel();
 		card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
 		card.setPreferredSize(new Dimension(220, 380));
@@ -226,8 +307,84 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		return card;
 	}
 
-	public void agregarLibro(Libro libro) {
+	private void libroAgregado(Libro libro, int cantidad) {
+		JPanel card = new JPanel();
+		card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
+		card.setPreferredSize(new Dimension(100, 200));
+		card.setBackground(new Color(240, 220, 200));
+		card.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+		ImageIcon original = new ImageIcon(libro.getRutaPortada());
+		Image scale = original.getImage().getScaledInstance(90, 110, Image.SCALE_SMOOTH);
+		JLabel img = new JLabel(new ImageIcon(scale));
+		img.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		JLabel lblCantidad = new JLabel("x" + cantidad);
+		lblCantidad.setForeground(Color.ORANGE);
+		lblCantidad.setFont(new Font("Segoe UI", Font.BOLD, 14));
+		lblCantidad.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		JButton quitar = new JButton("- Quitar");
+		quitar.setFont(new Font("Segoe UI", Font.BOLD, 12));
+		quitar.setFocusPainted(false);
+		quitar.setBorder(null);
+		quitar.setBackground(Color.ORANGE);
+		quitar.setAlignmentX(Component.CENTER_ALIGNMENT);
+		quitar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		quitar.addActionListener(e -> removerLibro(libro));
+
+		card.add(Box.createVerticalGlue());
+		card.add(img);
+		card.add(Box.createVerticalStrut(5));
+		card.add(lblCantidad);
+		card.add(Box.createVerticalStrut(5));
+		card.add(quitar);
+		card.add(Box.createVerticalGlue());
+
+		panelAgregado.add(card);
+	}
+
+	public void agregarLibro(Libro l) {
+		agregados.actualizarLista(l);
+		actualizarPanelAgregados();
+	}
+
+	public void removerLibro(Libro l) {
+		agregados.eliminar(l);
+		actualizarPanelAgregados();
+	}
+
+	private void actualizarPanelAgregados() {
+		panelAgregado.removeAll();
+
+		for (int i = 0; i < agregados.longitud(); i++) {
+			Libro l = agregados.obtener(i).getLibro();
+			int cantidad = agregados.obtener(i).getCantidad();
+
+			libroAgregado(l, cantidad);
+		}
+
+		updateAgregados();
+	}
+
+	public void updateAgregados() {
+
+		int total = 0;
+
+		for (int i = 0; i < agregados.longitud(); i++) {
+			total = total + agregados.obtener(i).getCantidad();
+		}
+
+		lblContadorAgregado.setText(total + " ");
+		panelAgregado.revalidate();
+		panelAgregado.repaint();
+	}
+
+	public void agregarUsuariosCombo() {
+		cbxUsuario.removeAll();
+		for (int i = 0; i < usuarios.longitud(); i++) {
+			cbxUsuario.addItem(usuarios.obtener(i));
+		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -239,9 +396,10 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		}
 	}
 
-	protected void actionPerformedBtnBuscar(ActionEvent e) {		
+	protected void actionPerformedBtnBuscar(ActionEvent e) {
 		cargarRepisa(txtBusqueda.getText());
 	}
+
 	protected void actionPerformedTxtBusqueda(ActionEvent e) {
 		cargarRepisa(txtBusqueda.getText());
 	}
