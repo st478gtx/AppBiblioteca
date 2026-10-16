@@ -22,25 +22,27 @@ public class Usuario {
 	
 	public Usuario(String codUser,String nomUser, String dniUser, String emailUser , String fonoUser, String estadoUser) {
 		
-		this.codUser=nomUser;
+		this.codUser=codUser;
 		this.nomUser = nomUser;
 		this.dniUser = dniUser;
 		this.emailUser = emailUser;
 		this.fonoUser = fonoUser;
 		this.estadoUser = estadoUser;
-		correlativo+=1;
-
-	}
 		
-	
-	
-	
+		// Actualizamos el correlativo basándonos en el código existente (ej. U1012 -> toma el 1012)
+				try {
+					int num = Integer.parseInt(codUser.substring(1));
+					if (num > correlativo) {
+						correlativo = num;
+					}
+				} catch (Exception e) {// Por si hay algún formato distinto
+				}
+			}
+		
 	
 	public Usuario() {
 	
 	}
-
-
 
 
 }

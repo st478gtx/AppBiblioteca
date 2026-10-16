@@ -22,6 +22,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 import javax.swing.JComboBox;
 import java.awt.Font;
+import java.awt.Color;
 
 
 
@@ -46,6 +47,9 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	private JComboBox cboEstado;
 	private JButton btnGuardar;
 	private JLabel lblTitulo;
+	private JLabel lblBusqueda;
+	private JTextField txtBuscar;
+	private JButton btnBuscar;
 	
 	
 
@@ -67,9 +71,21 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	 * Create the dialog.
 	 */
 	public frmUsuario() {
+		setBackground(new Color(240, 240, 240));
 		setTitle("Mantenimiento de Usuario");
 		setBounds(100, 100, 748, 640);
 		getContentPane().setLayout(null);
+		
+		btnBuscar = new JButton("Buscar");
+		btnBuscar.addActionListener(this);
+		btnBuscar.setBounds(598, 23, 89, 23);
+		getContentPane().add(btnBuscar);
+		
+		txtBuscar = new JTextField();
+		txtBuscar.setBackground(new Color(255, 255, 255));
+		txtBuscar.setBounds(469, 24, 121, 20);
+		getContentPane().add(txtBuscar);
+		txtBuscar.setColumns(10);
 		
 		lblNombres = new JLabel("Nombres");
 		lblNombres.setBounds(37, 103, 57, 14);
@@ -157,8 +173,15 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 		
 		lblTitulo = new JLabel("Mantenimiento de usuario");
 		lblTitulo.setFont(new Font("Tahoma", Font.BOLD, 24));
-		lblTitulo.setBounds(212, 22, 326, 45);
+		lblTitulo.setBounds(97, 24, 326, 45);
 		getContentPane().add(lblTitulo);
+		
+		lblBusqueda = new JLabel("");
+		lblBusqueda.setLabelFor(this);
+		lblBusqueda.setBackground(new Color(0, 128, 255));
+		lblBusqueda.setBounds(452, 11, 254, 45);
+		lblBusqueda.setOpaque(true);
+		getContentPane().add(lblBusqueda);
 		cargarUsuario();
 		listarEstado();
 		
@@ -196,6 +219,9 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	
 	
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnBuscar) {
+			actionPerformedBtnBuscar(e);
+		}
 		if (e.getSource() == btnGuardar) {
 			actionPerformedBtnGuardar(e);
 		}
@@ -253,7 +279,7 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	        txtFono.requestFocus();
 	        return;
 	    }
-	    // 7. Validar Teléfono (9 dígitos)
+	    // 7. Validar que este seleccionado un estado
 	    if (cboEstado.getSelectedIndex() == 0) {
 	        JOptionPane.showMessageDialog(this, "Por favor seleccione un estado", "Advertencia", JOptionPane.WARNING_MESSAGE);
 	        cboEstado.requestFocus(); // Coloca el foco en el combo box
@@ -387,14 +413,9 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	        return;
 	    }
 	    
-	    
-	    
 	    // Extraer el código de la primera columna (columna 0) y asignarlo
 	    String codigoSeleccionado = tbUsuario.getValueAt(fila, 0).toString();
-	    
-	    
-	    
-	    
+	 
 		Usuario u=new Usuario();
 		u.codUser = codigoSeleccionado;
 		u.nomUser=txtNombres.getText();
@@ -413,6 +434,43 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 		String mensaje=frmPrincipal.usuarios.guardar();
 		JOptionPane.showMessageDialog(null, mensaje);
 		
+		
+	}
+	protected void actionPerformedBtnBuscar(ActionEvent e) {
+		// 1. Obtener el texto ingresado en el buscador limpiando espacios
+	    String busqueda = txtBuscar.getText().trim();
+	    
+	    // 2. Validar que el campo no esté vacío
+	    if (busqueda.isEmpty()) {
+	        JOptionPane.showMessageDialog(this, "Ingrese un código o DNI para buscar.");
+	        txtBuscar.requestFocus();
+	        return;
+	    }
+	    
+	    // 3. Llamar al método de búsqueda que creamos en DatosUsuario
+	    Usuario u = frmPrincipal.usuarios.buscarPorCodigoODni(busqueda);
+	    
+	    // 4. Verificar si se encontró el usuario
+	    if (u != null) {
+	        // Mostrar los datos en las cajas de texto de la interfaz
+	        txtNombres.setText(u.nomUser);
+	        txtDni.setText(u.dniUser);
+	        txtEmail.setText(u.emailUser);
+	        txtFono.setText(u.fonoUser);
+	        cboEstado.setSelectedItem(u.estadoUser);
+	        
+	        // Opcional: Seleccionar automáticamente la fila correspondiente en la JTable
+	        for (int i = 0; i < tbUsuario.getRowCount(); i++) {
+	            String codigoTabla = tbUsuario.getValueAt(i, 0).toString();
+	            if (codigoTabla.equalsIgnoreCase(u.codUser)) {
+	                tbUsuario.setRowSelectionInterval(i, i);
+	                break;
+	            }
+	        }
+	    } else {
+	        JOptionPane.showMessageDialog(this, "No se encontró ningún usuario con el código o DNI ingresado.");
+	        limpiar(); // Limpia los campos si no existe
+	    }
 		
 	}
 }

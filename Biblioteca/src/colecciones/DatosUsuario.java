@@ -36,10 +36,24 @@ public class DatosUsuario {
 		return usuarios.get(i);
 	}
 	public String agregar(Usuario reg) {
+		// Recorremos la lista para verificar si el DNI ya existe
+	    for (Usuario u : usuarios) {
+	        if (u.dniUser.equals(reg.dniUser)) {
+	            return "El DNI " + reg.dniUser + " ya se encuentra registrado.";
+	        }
+	    }
+	    //si no existe lo agregamos de manera normal
 		usuarios.add(reg);
 		return "Registro del Usuario Agregado";
 	}
 	public String actualizar(Usuario reg) {
+		// 1. Verificar si el DNI ya le pertenece a OTRO usuario diferente
+	    for (Usuario u : usuarios) {
+	        if (u.dniUser.equals(reg.dniUser) && !u.codUser.equals(reg.codUser)) {
+	            return "El DNI " + reg.dniUser + " ya se encuentra registrado por otro usuario.";
+	        }
+	    }
+		
 		//buscar el Usuario por su codigo, si lo encuentra modificar sus datos
 		for(int i = 0; i < usuarios.size(); i++) {
 	        if(usuarios.get(i).codUser.equals(reg.codUser)) {
@@ -50,7 +64,7 @@ public class DatosUsuario {
 	    return "Usuario no encontrado";
 	}
 	public String eliminar(String codUser) {
-		//buscar el Usuario por su codigo, si lo encuentra modificar sus datos
+		//buscar el Usuario por su codigo, si lo encuentra eliminar sus datos
 		for(int i = 0; i < usuarios.size(); i++) {
 	        if(usuarios.get(i).codUser.equals(codUser)) {
 	        	usuarios.remove(i);
@@ -111,7 +125,15 @@ public class DatosUsuario {
 		
 	}
 
-	
+	public Usuario buscarPorCodigoODni(String texto) {
+	    for (Usuario u : usuarios) {
+	        // Compara si el texto coincide con el código o con el DNI
+	        if (u.codUser.equalsIgnoreCase(texto) || u.dniUser.equals(texto)) {
+	            return u; // Retorna el usuario si lo encuentra
+	        }
+	    }
+	    return null; // Retorna null si no existe
+	}
 	
 	
 	
