@@ -226,8 +226,8 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 		getContentPane().add(txtCantDisp);
 		txtCantDisp.setColumns(10);
 
-		lblCantDisponible = new JLabel("Disponible");
-		lblCantDisponible.setBounds(398, 169, 69, 14);
+		lblCantDisponible = new JLabel("Cant Disponible");
+		lblCantDisponible.setBounds(398, 169, 86, 14);
 		getContentPane().add(lblCantDisponible);
 
 		btnAgregarImagen = new JButton("Agregar Imagen");
@@ -318,6 +318,8 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 			cargarData();
 
 			limpiar();
+			
+			frmPrincipal.cargarRepisa("");
 			
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -513,6 +515,8 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 			cargarData();
 			
 			limpiar();
+			
+			frmPrincipal.cargarRepisa("");
 
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage());
@@ -553,6 +557,9 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 			cargarData();
 
 			limpiar();
+			
+			frmPrincipal.cargarRepisa("");
+			
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage());
 		}

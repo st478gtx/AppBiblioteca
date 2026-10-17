@@ -17,6 +17,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.awt.event.MouseListener;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.awt.event.MouseEvent;
 import javax.swing.UIManager;
@@ -54,7 +56,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	public static DatosLibro dataLibro = new DatosLibro();
 	public static DatosCategoria dataCategoria = new DatosCategoria();
 
-	public DatosLibroDetalle agregados = new DatosLibroDetalle();
+	public static DatosLibroDetalle agregados = new DatosLibroDetalle();
 
 	private JMenuBar menuBar;
 	private JMenu mnMantenimiento;
@@ -62,10 +64,10 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	private JMenuItem mntmCategoria;
 	private JMenuItem mntmLibro;
 	private JLabel lblCabecera;
-	private JTextField txtBusqueda;
+	private static JTextField txtBusqueda;
 	private JButton btnBuscar;
 	private JScrollPane scrollPane;
-	private JPanel panelEstanteria;
+	private static JPanel panelEstanteria;
 	private JComboBox<Usuario> cbxUsuario;
 	private JLabel lblNewLabel;
 	private JLabel lblNewLabel_1;
@@ -75,8 +77,10 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	private JButton btnEjecutarPrestamo;
 	private JScrollPane scrollPane_1;
 	private JLabel lblNewLabel_3;
-	private JPanel panelAgregado;
-	private JLabel lblContadorAgregado;
+	private static JPanel panelAgregado;
+	private static JLabel lblContadorAgregado;
+	
+	public LocalDate hoy = LocalDate.now();
 
 	/**
 	 * Launch the application.
@@ -166,17 +170,20 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		scrollPane.setViewportView(panelEstanteria);
 
 		cbxUsuario = new JComboBox<>();
-		cbxUsuario.setBounds(133, 90, 161, 22);
+		cbxUsuario.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		cbxUsuario.setBounds(133, 90, 175, 22);
 		contentPane.add(cbxUsuario);
 
 		agregarUsuariosCombo();
 
 		lblNewLabel = new JLabel("Usuarios registrados");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel.setBounds(23, 94, 116, 14);
 		contentPane.add(lblNewLabel);
 
 		lblNewLabel_1 = new JLabel("Fecha préstamo");
-		lblNewLabel_1.setBounds(367, 94, 77, 14);
+		lblNewLabel_1.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblNewLabel_1.setBounds(350, 94, 94, 14);
 		contentPane.add(lblNewLabel_1);
 
 		MaskFormatter mascaraFecha;
@@ -184,22 +191,30 @@ public class frmPrincipal extends JFrame implements ActionListener {
 			mascaraFecha = new MaskFormatter("##/##/####");
 			mascaraFecha.setPlaceholderCharacter('_');
 
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			
 			txtFechaPrestamo = new JFormattedTextField(mascaraFecha);
+			txtFechaPrestamo.setFont(new Font("Tahoma", Font.PLAIN, 14));
+			txtFechaPrestamo.setEditable(false);
 
 			txtFechaDevolucion = new JFormattedTextField(mascaraFecha);
+			txtFechaDevolucion.setFont(new Font("Tahoma", Font.PLAIN, 16));
+			txtFechaPrestamo.setText(hoy.format(formatter));
+			txtFechaDevolucion.setText(hoy.plusDays(5).format(formatter));
 
 		} catch (ParseException e1) {
 			e1.printStackTrace();
 		}
 
-		txtFechaPrestamo.setBounds(468, 91, 89, 20);
+		txtFechaPrestamo.setBounds(468, 91, 103, 20);
 		contentPane.add(txtFechaPrestamo);
 
 		lblNewLabel_2 = new JLabel("Fecha devolución");
+		lblNewLabel_2.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblNewLabel_2.setBounds(655, 94, 103, 14);
 		contentPane.add(lblNewLabel_2);
 
-		txtFechaDevolucion.setBounds(768, 91, 77, 20);
+		txtFechaDevolucion.setBounds(768, 91, 103, 20);
 		contentPane.add(txtFechaDevolucion);
 
 		btnEjecutarPrestamo = new JButton("Realizar préstamo");
@@ -245,7 +260,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		categoria.setVisible(true);
 	}
 
-	public void cargarRepisa(String buscar) {
+	public static void cargarRepisa(String buscar) {
 		panelEstanteria.removeAll();
 		var filtroLibro = dataLibro.buscar(txtBusqueda.getText());
 
@@ -256,8 +271,8 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		panelEstanteria.revalidate();
 		panelEstanteria.repaint();
 	}
-
-	public JPanel cardLibro(Libro libro) {
+	
+	public static JPanel cardLibro(Libro libro) {
 		JPanel card = new JPanel();
 		card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
 		card.setPreferredSize(new Dimension(220, 380));
@@ -307,7 +322,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		return card;
 	}
 
-	private void libroAgregado(Libro libro, int cantidad) {
+	private static void libroAgregado(Libro libro, int cantidad) {
 		JPanel card = new JPanel();
 		card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
 		card.setPreferredSize(new Dimension(100, 200));
@@ -344,17 +359,17 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		panelAgregado.add(card);
 	}
 
-	public void agregarLibro(Libro l) {
+	public static void agregarLibro(Libro l) {
 		agregados.actualizarLista(l);
 		actualizarPanelAgregados();
 	}
 
-	public void removerLibro(Libro l) {
+	public static void removerLibro(Libro l) {
 		agregados.eliminar(l);
 		actualizarPanelAgregados();
 	}
 
-	private void actualizarPanelAgregados() {
+	private static void actualizarPanelAgregados() {
 		panelAgregado.removeAll();
 
 		for (int i = 0; i < agregados.longitud(); i++) {
@@ -367,7 +382,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		updateAgregados();
 	}
 
-	public void updateAgregados() {
+	public static void updateAgregados() {
 
 		int total = 0;
 
