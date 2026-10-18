@@ -1,9 +1,11 @@
-package clases;
+package util;
+
+import clases.Libro;
 
 public class DetalleLibro {
 
     private Libro libro;
-    private int cantidad = 0;
+    private int cantidad = 0;       
 
     public DetalleLibro(Libro libro, int cantidad) {
         this.libro = libro;

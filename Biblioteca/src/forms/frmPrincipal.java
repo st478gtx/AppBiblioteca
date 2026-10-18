@@ -7,14 +7,19 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
-import clases.Categoria;
-import clases.DetalleLibro;
+import clases.DetallePrestamo;
 import clases.Libro;
+import clases.Prestamo;
 import clases.Usuario;
 import colecciones.*;
+import util.DatosLibroDetalle;
+import util.DetalleLibro;
+
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+
 import java.awt.event.MouseListener;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -55,8 +60,11 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	public static DatosUsuario usuarios = new DatosUsuario();
 	public static DatosLibro dataLibro = new DatosLibro();
 	public static DatosCategoria dataCategoria = new DatosCategoria();
+	public static DatosPrestamo dataPrestamo = new DatosPrestamo();
 
 	public static DatosLibroDetalle agregados = new DatosLibroDetalle();
+
+	public static DatosDetallePrestamo detalles = new DatosDetallePrestamo();
 
 	private JMenuBar menuBar;
 	private JMenu mnMantenimiento;
@@ -74,13 +82,15 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	private JFormattedTextField txtFechaPrestamo;
 	private JLabel lblNewLabel_2;
 	private JFormattedTextField txtFechaDevolucion;
-	private JButton btnEjecutarPrestamo;
+	private static JButton btnEjecutarPrestamo;
 	private JScrollPane scrollPane_1;
 	private JLabel lblNewLabel_3;
 	private static JPanel panelAgregado;
 	private static JLabel lblContadorAgregado;
-	
+
 	public LocalDate hoy = LocalDate.now();
+	private JMenu mnNewMenu;
+	private JMenuItem mntmNewMenuItem;
 
 	/**
 	 * Launch the application.
@@ -134,6 +144,12 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		mntmLibro.addActionListener(e -> mostrarMantenimientoLibros());
 
 		mnMantenimiento.add(mntmLibro);
+
+		mnNewMenu = new JMenu("Proceso");
+		menuBar.add(mnNewMenu);
+
+		mntmNewMenuItem = new JMenuItem("Listado prestado");
+		mnNewMenu.add(mntmNewMenuItem);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -192,7 +208,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 			mascaraFecha.setPlaceholderCharacter('_');
 
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			
+
 			txtFechaPrestamo = new JFormattedTextField(mascaraFecha);
 			txtFechaPrestamo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 			txtFechaPrestamo.setEditable(false);
@@ -218,6 +234,8 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		contentPane.add(txtFechaDevolucion);
 
 		btnEjecutarPrestamo = new JButton("Realizar préstamo");
+		btnEjecutarPrestamo.setEnabled(false);
+		btnEjecutarPrestamo.addActionListener(this);
 		btnEjecutarPrestamo.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		btnEjecutarPrestamo.setBounds(965, 81, 151, 36);
 		contentPane.add(btnEjecutarPrestamo);
@@ -271,7 +289,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		panelEstanteria.revalidate();
 		panelEstanteria.repaint();
 	}
-	
+
 	public static JPanel cardLibro(Libro libro) {
 		JPanel card = new JPanel();
 		card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
@@ -389,10 +407,16 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		for (int i = 0; i < agregados.longitud(); i++) {
 			total = total + agregados.obtener(i).getCantidad();
 		}
+		if (agregados.longitud() != 0) {
+			btnEjecutarPrestamo.setEnabled(true);
+		} else {
+			btnEjecutarPrestamo.setEnabled(false);
+		}
 
 		lblContadorAgregado.setText(total + " ");
 		panelAgregado.revalidate();
 		panelAgregado.repaint();
+
 	}
 
 	public void agregarUsuariosCombo() {
@@ -403,6 +427,9 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == btnEjecutarPrestamo) {
+			actionPerformedBtnEjecutarPrestamo(e);
+		}
 		if (e.getSource() == txtBusqueda) {
 			actionPerformedTxtBusqueda(e);
 		}
@@ -417,5 +444,47 @@ public class frmPrincipal extends JFrame implements ActionListener {
 
 	protected void actionPerformedTxtBusqueda(ActionEvent e) {
 		cargarRepisa(txtBusqueda.getText());
+	}
+
+	protected void actionPerformedBtnEjecutarPrestamo(ActionEvent e) {
+
+		try {
+
+			Usuario codUsuario = (Usuario) cbxUsuario.getSelectedItem();
+
+			String fechaPrest = txtFechaPrestamo.getText();
+			String fechaDev = txtFechaDevolucion.getText();
+
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
+			LocalDate fechaPrestamo = LocalDate.parse(fechaPrest, formatter);
+			LocalDate fechaDevolucion = LocalDate.parse(fechaDev, formatter);
+
+			Prestamo p = new Prestamo(codUsuario.codUser, fechaPrestamo, fechaDevolucion);
+
+			String codPrestamo = frmPrincipal.dataPrestamo.agregar(p);
+
+			for (int i = 0; i < agregados.longitud(); i++) {
+				DetalleLibro a = agregados.obtener(i);
+
+				detalles.agregar(a.getLibro().getCodLibro(), codPrestamo, a.getCantidad());
+			}
+
+			frmBoleta boleta = new frmBoleta(p);
+			boleta.setLocationRelativeTo(null);
+			boleta.setVisible(true);
+
+			agregados.detalleLibros.clear();
+
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, ex.getMessage());
+		}
+	}
+
+	public static void limpiarAgregados() {
+		panelAgregado.removeAll();
+		panelAgregado.revalidate();
+		panelAgregado.repaint();
+		lblContadorAgregado.setText("");
 	}
 }

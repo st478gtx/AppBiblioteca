@@ -1,8 +1,7 @@
-package colecciones;
+package util;
 
 import java.util.ArrayList;
 
-import clases.DetalleLibro;
 import clases.Libro;
 
 public class DatosLibroDetalle {

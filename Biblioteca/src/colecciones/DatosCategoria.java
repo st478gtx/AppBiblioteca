@@ -7,8 +7,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import clases.Categoria;
-import clases.Libro;
-import clases.Usuario;
 
 public class DatosCategoria {
 	public ArrayList<Categoria> categorias = new ArrayList<>();
@@ -57,7 +55,7 @@ public class DatosCategoria {
 		for (int i = 0; i < longitud(); i++) {
 			if (obtener(i).getCodCategoria().equalsIgnoreCase(codCategoria)) {
 				categorias.remove(i);
-				return "Registro de categoría actualizado";
+				return "Registro de categoría eliminado";
 			}
 		}
 		return "Categoria no encontrada";

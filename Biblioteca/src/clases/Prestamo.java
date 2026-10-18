@@ -4,8 +4,7 @@ import java.time.LocalDate;
 
 public class Prestamo {
 	String codPrestamo;
-	Usuario usuario;
-	Libro libro;
+	String codUsuario;
 	LocalDate fechaPrestamo;
 	LocalDate fechaDevolucion;
 	String estado;
@@ -16,17 +15,24 @@ public class Prestamo {
 		correlativo = 0;
 	}
 
-	public Prestamo(Usuario usuario, Libro libro, LocalDate fechaPrestamo, LocalDate fechaDevolucion, String estado) {
+	public Prestamo(String codUsuario, LocalDate fechaPrestamo, LocalDate fechaDevolucion) {
 		correlativo += 10;
 		this.codPrestamo = "P" + correlativo;
-		this.usuario = usuario;
-		this.libro = libro;
+		this.codUsuario = codUsuario;
 		this.fechaPrestamo = fechaPrestamo;
 		this.fechaDevolucion = fechaDevolucion;
-		this.estado = estado;
 	}
-	
-	public Prestamo() {}
+
+	public Prestamo(String codPrestamo, String codUsuario, LocalDate fechaPrestamo, LocalDate fechaDevolucion) {
+		this.codPrestamo = codPrestamo;
+		this.codUsuario = codUsuario;
+		this.fechaPrestamo = fechaPrestamo;
+		this.fechaDevolucion = fechaDevolucion;
+		correlativo += 10;
+	}
+
+	public Prestamo() {
+	}
 
 	public String getCodPrestamo() {
 		return codPrestamo;
@@ -36,20 +42,12 @@ public class Prestamo {
 		this.codPrestamo = codPrestamo;
 	}
 
-	public Usuario getUsuario() {
-		return usuario;
+	public String getCodUsuario() {
+		return codUsuario;
 	}
 
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
-
-	public Libro getLibro() {
-		return libro;
-	}
-
-	public void setLibro(Libro libro) {
-		this.libro = libro;
+	public void setCodUsuario(String usuario) {
+		this.codUsuario = usuario;
 	}
 
 	public LocalDate getFechaPrestamo() {
