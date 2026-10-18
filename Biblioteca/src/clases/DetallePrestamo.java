@@ -18,7 +18,7 @@ public class DetallePrestamo {
 		this.cantPrestamo = cantPrestamo;
 	}
 
-	public DetallePrestamo(String codDetallePrestamo, String codLibro, String codPrestamo, int cantPrestamo) {
+	public DetallePrestamo(String codDetallePrestamo,  String codPrestamo, String codLibro, int cantPrestamo) {
 		this.codDetallePrestamo = codDetallePrestamo;
 		this.codLibro = codLibro;
 		this.codPrestamo = codPrestamo;

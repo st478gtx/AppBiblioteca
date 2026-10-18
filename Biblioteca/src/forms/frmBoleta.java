@@ -12,6 +12,7 @@ import clases.DetallePrestamo;
 import clases.Libro;
 import clases.Prestamo;
 import clases.Usuario;
+import colecciones.DatosDetallePrestamo;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -29,6 +30,7 @@ public class frmBoleta extends JDialog implements ActionListener {
 	private JTextArea txtBoleta;
 
 	Prestamo prestamo;
+	DetallePrestamo detalle;
 
 	/**
 	 * Launch the application.
@@ -52,6 +54,7 @@ public class frmBoleta extends JDialog implements ActionListener {
 		getContentPane().setLayout(null);
 
 		this.prestamo = prestamo;
+		//this.detalle = detalle;
 
 		scrollPane = new JScrollPane();
 		scrollPane.setBounds(10, 11, 358, 441);
@@ -73,7 +76,7 @@ public class frmBoleta extends JDialog implements ActionListener {
 	}
 
 	private void generarBoleta() {
-
+		
 		StringBuilder boleta = new StringBuilder();
 
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy");
@@ -100,12 +103,12 @@ public class frmBoleta extends JDialog implements ActionListener {
 
 		// Detalles de los libros.
 		for (int i = 0; i < frmPrincipal.detalles.longitud(); i++) {
-			DetallePrestamo detalle = frmPrincipal.detalles.obtener(i);
+			detalle = frmPrincipal.detalles.obtener(i);
 
 			if (detalle.getCodPrestamo().equals(prestamo.getCodPrestamo())) {
 
 				boleta.append(String.format("%-8s %-24s %6d%n", detalle.getCodLibro(),
-						obtenerTituloLibro(detalle.getCodLibro()), detalle.getCantPrestamo()));
+						recortarTitulo(obtenerTituloLibro(detalle.getCodLibro()), 24), detalle.getCantPrestamo()));
 			}
 		}
 

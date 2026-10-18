@@ -89,8 +89,8 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	private static JLabel lblContadorAgregado;
 
 	public LocalDate hoy = LocalDate.now();
-	private JMenu mnNewMenu;
-	private JMenuItem mntmNewMenuItem;
+	private JMenu mnProceso;
+	private JMenuItem mntmEntregaPrestamo;
 
 	/**
 	 * Launch the application.
@@ -145,11 +145,12 @@ public class frmPrincipal extends JFrame implements ActionListener {
 
 		mnMantenimiento.add(mntmLibro);
 
-		mnNewMenu = new JMenu("Proceso");
-		menuBar.add(mnNewMenu);
+		mnProceso = new JMenu("Proceso");
+		menuBar.add(mnProceso);
 
-		mntmNewMenuItem = new JMenuItem("Listado prestado");
-		mnNewMenu.add(mntmNewMenuItem);
+		mntmEntregaPrestamo = new JMenuItem("Entrega de prestamo");
+		mntmEntregaPrestamo.addActionListener(this);
+		mnProceso.add(mntmEntregaPrestamo);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -427,6 +428,9 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == mntmEntregaPrestamo) {
+			actionPerformedMntmEntregaPrestamo(e);
+		}
 		if (e.getSource() == btnEjecutarPrestamo) {
 			actionPerformedBtnEjecutarPrestamo(e);
 		}
@@ -469,10 +473,13 @@ public class frmPrincipal extends JFrame implements ActionListener {
 
 				detalles.agregar(a.getLibro().getCodLibro(), codPrestamo, a.getCantidad());
 			}
-
+			
 			frmBoleta boleta = new frmBoleta(p);
 			boleta.setLocationRelativeTo(null);
 			boleta.setVisible(true);
+			
+			dataPrestamo.guardar();
+			detalles.guardar();
 
 			agregados.detalleLibros.clear();
 
@@ -486,5 +493,10 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		panelAgregado.revalidate();
 		panelAgregado.repaint();
 		lblContadorAgregado.setText("");
+	}
+	protected void actionPerformedMntmEntregaPrestamo(ActionEvent e) {
+		frmListaPrestamo listaPrestamo = new frmListaPrestamo();
+		listaPrestamo.setLocationRelativeTo(null);
+		listaPrestamo.setVisible(true);
 	}
 }

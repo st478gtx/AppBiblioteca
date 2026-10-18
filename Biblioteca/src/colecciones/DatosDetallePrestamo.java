@@ -11,6 +11,10 @@ import clases.DetallePrestamo;
 public class DatosDetallePrestamo {
 	public ArrayList<DetallePrestamo> detallePrestamos = new ArrayList<DetallePrestamo>();
 
+	public DatosDetallePrestamo() {
+		recuperar();
+	}
+
 	public int longitud() {
 		return detallePrestamos.size();
 	}
@@ -36,7 +40,7 @@ public class DatosDetallePrestamo {
 		}
 		return "Detalle de prestamo no encontrado";
 	}
-	
+
 	public String remover(String codDetallePrestamo) {
 		for (int i = 0; i < longitud(); i++) {
 			if (obtener(i).getCodDetallePrestamo().equalsIgnoreCase(codDetallePrestamo)) {
@@ -83,10 +87,10 @@ public class DatosDetallePrestamo {
 		detallePrestamos.clear();
 		try {
 
-			BufferedReader categoria = new BufferedReader(new FileReader("datos\\detallePrestamo.txt"));
+			BufferedReader detallePrestamo = new BufferedReader(new FileReader("datos\\detallePrestamo.txt"));
 			String linea;
 
-			while ((linea = categoria.readLine()) != null) {
+			while ((linea = detallePrestamo.readLine()) != null) {
 
 				String[] arreglo = linea.split(";");
 
@@ -96,7 +100,7 @@ public class DatosDetallePrestamo {
 				detallePrestamos.add(c);
 			}
 
-			categoria.close();
+			detallePrestamo.close();
 		} catch (Exception ex) {
 			return;
 		}

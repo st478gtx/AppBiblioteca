@@ -13,12 +13,25 @@ import clases.Prestamo;
 public class DatosPrestamo {
 	public ArrayList<Prestamo> prestamos = new ArrayList<>();
 
+	public DatosPrestamo() {
+		recuperar();
+	}
+
 	public int longitud() {
 		return prestamos.size();
 	}
 
 	public Prestamo obtener(int i) {
 		return prestamos.get(i);
+	}
+
+	public Prestamo obtener(String codPrestamo) {
+		for (int i = 0; i < longitud(); i++) {
+			if (obtener(i).getCodPrestamo().equalsIgnoreCase(codPrestamo)) {
+				return prestamos.get(i);
+			}
+		}
+		return null;
 	}
 
 	public String agregar(Prestamo p) {
@@ -82,26 +95,25 @@ public class DatosPrestamo {
 		prestamos.clear();
 		try {
 
-			BufferedReader categoria = new BufferedReader(new FileReader("datos\\prestamos.txt"));
+			BufferedReader prestamo = new BufferedReader(new FileReader("datos\\prestamos.txt"));
 			String linea;
 
-			while ((linea = categoria.readLine()) != null) {
+			while ((linea = prestamo.readLine()) != null) {
 
 				String[] arreglo = linea.split(";");
 
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				LocalDate fechaPrestamo = LocalDate.parse(arreglo[2]);
 
-				LocalDate fechaPrestamo = LocalDate.parse(arreglo[3], formatter);
-
-				LocalDate fechaDevolucion = LocalDate.parse(arreglo[4], formatter);
+				LocalDate fechaDevolucion = LocalDate.parse(arreglo[3]);
 
 				Prestamo c = new Prestamo(arreglo[0], arreglo[1], fechaPrestamo, fechaDevolucion);
 
 				prestamos.add(c);
 			}
 
-			categoria.close();
+			prestamo.close();
 		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
 			return;
 		}
 	}
