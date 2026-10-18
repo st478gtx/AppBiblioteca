@@ -5,4 +5,10 @@ target/
 .project
 .settings/
 *.class
-.idea/
+.idea/*
+!.idea/misc.xml
+!.idea/modules.xml
+!.idea/runConfigurations/
+.idea/runConfigurations/*
+!.idea/runConfigurations/Biblioteca.xml
+out/

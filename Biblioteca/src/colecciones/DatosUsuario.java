@@ -3,12 +3,16 @@ import java.util.ArrayList;
 import java.io.*;
 
 import clases.Usuario;
+import util.Codigos;
+import repository.Repositorio;
 
 
 public class DatosUsuario {
+	private final Repositorio<Usuario> repositorio;
 	private ArrayList<Usuario> usuarios =new ArrayList<Usuario>();
 
-	public DatosUsuario () {
+	public DatosUsuario(Repositorio<Usuario> repositorio) {
+		this.repositorio = repositorio;
 		// intentamos recuperar los datos guardados en el archivo
 		recuperar();
 		
@@ -25,6 +29,7 @@ public class DatosUsuario {
 		usuarios.add(new Usuario("Silvia Benavides",  "85655820", "sbenavides@gmail.com","963867947","Registrado"));
 		usuarios.add(new Usuario("Sofia Rios",  "84553001", "sofir@gmail.com","981000248","Registrado"));
 		// Guardamos estos datos iniciales en el archivo por primera vez
+					for (Usuario usuario : usuarios) asignarCodigo(usuario);
 					guardar();
 				}
 		}
@@ -38,25 +43,33 @@ public class DatosUsuario {
 	public String agregar(Usuario reg) {
 		// Recorremos la lista para verificar si el DNI ya existe
 	    for (Usuario u : usuarios) {
-	        if (u.dniUser.equals(reg.dniUser)) {
-	            return "El DNI " + reg.dniUser + " ya se encuentra registrado.";
+	        if (u.getDniUser().equals(reg.getDniUser())) {
+	            return "El DNI " + reg.getDniUser() + " ya se encuentra registrado.";
 	        }
 	    }
 	    //si no existe lo agregamos de manera normal
+		asignarCodigo(reg);
 		usuarios.add(reg);
 		return "Registro del Usuario Agregado";
+	}
+
+	private void asignarCodigo(Usuario usuario) {
+		if (usuario.getCodUser() == null || usuario.getCodUser().isBlank()) {
+			usuario.setCodUser(Codigos.siguiente("U", 1000, 1,
+					usuarios.stream().map(Usuario::getCodUser).filter(java.util.Objects::nonNull).toList()));
+		}
 	}
 	public String actualizar(Usuario reg) {
 		// 1. Verificar si el DNI ya le pertenece a OTRO usuario diferente
 	    for (Usuario u : usuarios) {
-	        if (u.dniUser.equals(reg.dniUser) && !u.codUser.equals(reg.codUser)) {
-	            return "El DNI " + reg.dniUser + " ya se encuentra registrado por otro usuario.";
+	        if (u.getDniUser().equals(reg.getDniUser()) && !u.getCodUser().equals(reg.getCodUser())) {
+	            return "El DNI " + reg.getDniUser() + " ya se encuentra registrado por otro usuario.";
 	        }
 	    }
 		
 		//buscar el Usuario por su codigo, si lo encuentra modificar sus datos
 		for(int i = 0; i < usuarios.size(); i++) {
-	        if(usuarios.get(i).codUser.equals(reg.codUser)) {
+	        if(usuarios.get(i).getCodUser().equals(reg.getCodUser())) {
 	        	usuarios.set(i, reg);
 	            return "Registro del Usuario Actualizado";
 	        }
@@ -66,7 +79,7 @@ public class DatosUsuario {
 	public String eliminar(String codUser) {
 		//buscar el Usuario por su codigo, si lo encuentra eliminar sus datos
 		for(int i = 0; i < usuarios.size(); i++) {
-	        if(usuarios.get(i).codUser.equals(codUser)) {
+	        if(usuarios.get(i).getCodUser().equals(codUser)) {
 	        	usuarios.remove(i);
 	            return "Registro del Usuario Eliminado";
 	        }
@@ -75,60 +88,20 @@ public class DatosUsuario {
 	}
 	
 	public String guardar() {
-		String mensaje="";
-		if(longitud()==0) {
-			mensaje= "Registre al usuario para guardarlos";
-		}
-		else {
-			try {
-				//crear el archivo usuarios.txt para escribir
-				PrintWriter usuario=new PrintWriter(new FileWriter("datos\\usuarios.txt"));
-				for(int i=0; i<longitud(); i++) {
-					//recupero el usuario a traves de su ubicacion en i
-					Usuario x=obtener(i);
-					//imprmir el contenido de x en usuarios
-					usuario.println(x.codUser+";"+x.nomUser+";"+x.dniUser+";"+x.emailUser+";"+x.fonoUser+";"+x.estadoUser);
-				}
-				//despues del for, cerrar
-				usuario.close();
-				mensaje="Se ha guardado:"+longitud()+" registros de usuarios";
-			}
-			catch(Exception ex) {
-				mensaje=ex.getMessage(); //en caso de error, almaceno
-			}
-		}
-		return mensaje;
+		repositorio.guardar(new ArrayList<>(usuarios));
+		return "Se han guardado " + usuarios.size() + " registros de usuarios";
 	}
 	
 	public void recuperar() {
-		usuarios.clear(); // Limpiamos la lista antes de cargar para evitar duplicados
-		try {
-			//abrir el archivo usuarios.txt para leer
-			BufferedReader usuario=new BufferedReader(new FileReader("datos\\usuarios.txt"));
-			String linea;
-			//mientras que al leer la linea sea diferente a null
-			while((linea=usuario.readLine())!=null)
-			{
-				//descomponer la linea en un array de cadena
-				String[] arreglo=linea.split(";");
-				//instanciar el Autor pasando todos los datos
-				Usuario x=new Usuario(arreglo[0],arreglo[1],arreglo[2],arreglo[3],arreglo[4],arreglo[5]);
-				//agregar a la lista
-				usuarios.add(x);
-			}
-			//despues del for, cerrar
-			usuario.close();
-		}
-		catch(Exception ex) {
-			return;
-		}
-		
+		ArrayList<Usuario> cargados = repositorio.cargar();
+		usuarios.clear();
+		usuarios.addAll(cargados);
 	}
 
 	public Usuario buscarPorCodigoODni(String texto) {
 	    for (Usuario u : usuarios) {
 	        // Compara si el texto coincide con el código o con el DNI
-	        if (u.codUser.equalsIgnoreCase(texto) || u.dniUser.equals(texto)) {
+	        if (u.getCodUser().equalsIgnoreCase(texto) || u.getDniUser().equals(texto)) {
 	            return u; // Retorna el usuario si lo encuentra
 	        }
 	    }

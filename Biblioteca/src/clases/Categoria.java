@@ -4,25 +4,17 @@ public class Categoria {
 	private String codCategoria;
 	private String nombre;
 
-	private static int correlativo;
-
-	static {
-		correlativo = 0;
-	}
 
 	public Categoria() {
 	}
 
 	public Categoria(String nombre) {
-		correlativo += 10;
-		this.codCategoria = "C" + correlativo;
 		this.nombre = nombre;
 	}
 
 	public Categoria(String codCategoria, String nombre) {
 		this.codCategoria = codCategoria;
 		this.nombre = nombre;
-		correlativo += 10;
 	}
 
 	public String getCodCategoria() {

@@ -8,8 +8,10 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import util.Constante;
+import util.Rutas;
 
 public class ImagenRenderer extends DefaultTableCellRenderer {
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
@@ -20,13 +22,13 @@ public class ImagenRenderer extends DefaultTableCellRenderer {
 		setText("");
 
 		if (value != null) {
-			ImageIcon icon = new ImageIcon(value.toString());
+			ImageIcon icon = new ImageIcon(Rutas.imagen(value.toString()).toString());
 
 			Image imagen = icon.getImage().getScaledInstance(50, 70, Image.SCALE_SMOOTH);
 
 			setIcon(new ImageIcon(imagen));
 		} else {
-			ImageIcon noImage =new ImageIcon(Constante.SIN_IMAGEN_PORTADA);
+			ImageIcon noImage =new ImageIcon(Constante.rutaSinImagenPortada());
 			Image imagen = noImage.getImage().getScaledInstance(50, 70, Image.SCALE_SMOOTH);
 			setIcon(new ImageIcon(imagen));
 		}

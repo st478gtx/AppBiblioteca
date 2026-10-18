@@ -4,15 +4,8 @@ public class DetallePrestamo {
 	String codLibro, codPrestamo, codDetallePrestamo;
 	int cantPrestamo;
 
-	private static int correlativo;
-
-	static {
-		correlativo = 0;
-	}
 
 	public DetallePrestamo(String codLibro, String codPrestamo, int cantPrestamo) {
-		correlativo += 10;
-		this.codDetallePrestamo = "DP" + correlativo;
 		this.codLibro = codLibro;
 		this.codPrestamo = codPrestamo;
 		this.cantPrestamo = cantPrestamo;
@@ -23,7 +16,6 @@ public class DetallePrestamo {
 		this.codLibro = codLibro;
 		this.codPrestamo = codPrestamo;
 		this.cantPrestamo = cantPrestamo;
-		correlativo += 10;
 	}
 
 	public String getCodLibro() {

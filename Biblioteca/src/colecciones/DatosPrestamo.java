@@ -1,19 +1,18 @@
 package colecciones;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import clases.Prestamo;
+import util.Codigos;
+import repository.Repositorio;
 
 public class DatosPrestamo {
-	public ArrayList<Prestamo> prestamos = new ArrayList<>();
+	private final Repositorio<Prestamo> repositorio;
+	private final ArrayList<Prestamo> prestamos = new ArrayList<>();
+	public ArrayList<Prestamo> listar() { return new ArrayList<>(prestamos); }
 
-	public DatosPrestamo() {
+	public DatosPrestamo(Repositorio<Prestamo> repositorio) {
+		this.repositorio = repositorio;
 		recuperar();
 	}
 
@@ -35,6 +34,11 @@ public class DatosPrestamo {
 	}
 
 	public String agregar(Prestamo p) {
+		if (p.getCodPrestamo() == null || p.getCodPrestamo().isBlank()) {
+			p.setCodPrestamo(Codigos.siguiente("P", 0, 10,
+					prestamos.stream().map(Prestamo::getCodPrestamo).filter(java.util.Objects::nonNull).toList()));
+		}
+		if (obtener(p.getCodPrestamo()) != null) throw new IllegalArgumentException("Código de préstamo duplicado");
 		prestamos.add(p);
 		return String.valueOf(p.getCodPrestamo());
 	}
@@ -60,61 +64,13 @@ public class DatosPrestamo {
 	}
 
 	public String guardar() {
-
-		String mensaje = "";
-
-		if (longitud() == 0) {
-
-			mensaje = "Registre un detalle de prestamo para guardarlo";
-
-		} else {
-			try {
-
-				PrintWriter detallePrestamo = new PrintWriter(new FileWriter("datos\\prestamos.txt"));
-
-				for (int i = 0; i < longitud(); i++) {
-
-					Prestamo c = obtener(i);
-
-					detallePrestamo.println(c.getCodPrestamo() + ";" + c.getCodUsuario() + ";" + c.getFechaPrestamo()
-							+ ";" + c.getFechaDevolucion());
-				}
-
-				detallePrestamo.close();
-
-				mensaje = "Se ha guardado:" + longitud() + " registros detalle prestamo";
-
-			} catch (Exception ex) {
-				mensaje = ex.getMessage();
-			}
-		}
-		return mensaje;
+		repositorio.guardar(new ArrayList<>(prestamos));
+		return "Se han guardado " + prestamos.size() + " registros de préstamos";
 	}
 
 	public void recuperar() {
+		ArrayList<Prestamo> cargados = repositorio.cargar();
 		prestamos.clear();
-		try {
-
-			BufferedReader prestamo = new BufferedReader(new FileReader("datos\\prestamos.txt"));
-			String linea;
-
-			while ((linea = prestamo.readLine()) != null) {
-
-				String[] arreglo = linea.split(";");
-
-				LocalDate fechaPrestamo = LocalDate.parse(arreglo[2]);
-
-				LocalDate fechaDevolucion = LocalDate.parse(arreglo[3]);
-
-				Prestamo c = new Prestamo(arreglo[0], arreglo[1], fechaPrestamo, fechaDevolucion);
-
-				prestamos.add(c);
-			}
-
-			prestamo.close();
-		} catch (Exception ex) {
-			System.out.println(ex.getMessage());
-			return;
-		}
+		prestamos.addAll(cargados);
 	}
 }

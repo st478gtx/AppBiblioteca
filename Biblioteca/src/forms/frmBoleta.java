@@ -1,18 +1,14 @@
 package forms;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
 import clases.DetallePrestamo;
 import clases.Libro;
 import clases.Prestamo;
 import clases.Usuario;
-import colecciones.DatosDetallePrestamo;
+import app.BibliotecaContexto;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -23,6 +19,8 @@ import java.time.format.DateTimeFormatter;
 import java.awt.event.ActionEvent;
 
 public class frmBoleta extends JDialog implements ActionListener {
+	private final BibliotecaContexto contexto;
+	private final Runnable limpiarSeleccion;
 
 	private static final long serialVersionUID = 1L;
 	private JScrollPane scrollPane;
@@ -30,25 +28,13 @@ public class frmBoleta extends JDialog implements ActionListener {
 	private JTextArea txtBoleta;
 
 	Prestamo prestamo;
-	DetallePrestamo detalle;
-
-	/**
-	 * Launch the application.
-	 */
-//	public static void main(String[] args) {
-//		try {
-//			frmBoleta dialog = new frmBoleta("");
-//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			dialog.setVisible(true);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
 
 	/**
 	 * Create the dialog.
 	 */
-	public frmBoleta(Prestamo prestamo) {
+	public frmBoleta(BibliotecaContexto contexto, Prestamo prestamo, Runnable limpiarSeleccion) {
+		this.contexto = contexto;
+		this.limpiarSeleccion = limpiarSeleccion;
 		setTitle("Boleta");
 		setBounds(100, 100, 394, 536);
 		getContentPane().setLayout(null);
@@ -102,14 +88,10 @@ public class frmBoleta extends JDialog implements ActionListener {
 		boleta.append("----------------------------------------\n");
 
 		// Detalles de los libros.
-		for (int i = 0; i < frmPrincipal.detalles.longitud(); i++) {
-			detalle = frmPrincipal.detalles.obtener(i);
-
-			if (detalle.getCodPrestamo().equals(prestamo.getCodPrestamo())) {
+		for (DetallePrestamo detalle : contexto.prestamos().detallesDe(prestamo.getCodPrestamo())) {
 
 				boleta.append(String.format("%-8s %-24s %6d%n", detalle.getCodLibro(),
 						recortarTitulo(obtenerTituloLibro(detalle.getCodLibro()), 24), detalle.getCantPrestamo()));
-			}
 		}
 
 		boleta.append("========================================\n");
@@ -134,31 +116,31 @@ public class frmBoleta extends JDialog implements ActionListener {
 	}
 
 	protected void actionPerformedBtnAceptar(ActionEvent e) {
-		frmPrincipal.limpiarAgregados();
+		limpiarSeleccion.run();
 		this.dispose();
 	}
 
 	public String obtenerNombreUsuario(String codUsuario) {
-		Usuario u = frmPrincipal.usuarios.buscarPorCodigoODni(codUsuario);
-		return u.nomUser;
+		Usuario u = contexto.usuarios().buscar(codUsuario);
+		return u == null ? "Usuario no encontrado" : u.getNomUser();
 	}
 
 	private void disposeAsientos() {
 		addWindowListener(new WindowAdapter() {
 
 			public void windowClosing(WindowEvent e) {
-				frmPrincipal.limpiarAgregados();
+				limpiarSeleccion.run();
 			}
 
 			public void windowClosed(WindowEvent e) {
-				frmPrincipal.limpiarAgregados();
+				limpiarSeleccion.run();
 			}
 		});
 	}
 
 	public String obtenerTituloLibro(String codLibro) {
-		for (int i = 0; i < frmPrincipal.dataLibro.longitud(); i++) {
-			Libro l = frmPrincipal.dataLibro.obtener(i);
+		for (int i = 0; i < contexto.libros().longitud(); i++) {
+			Libro l = contexto.libros().obtener(i);
 
 			if (l.getCodLibro().equals(codLibro)) {
 				return l.getTitulo();

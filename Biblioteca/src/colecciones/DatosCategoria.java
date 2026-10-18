@@ -1,18 +1,20 @@
 package colecciones;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import clases.Categoria;
+import util.Codigos;
+import repository.Repositorio;
 
 public class DatosCategoria {
-	public ArrayList<Categoria> categorias = new ArrayList<>();
-	public ArrayList<Categoria> categoriaAgregado = new ArrayList<>();
+	private final Repositorio<Categoria> repositorio;
+	private final ArrayList<Categoria> categorias = new ArrayList<>();
+	public ArrayList<Categoria> listar() { return new ArrayList<>(categorias); }
+	private final ArrayList<Categoria> categoriaAgregado = new ArrayList<>();
+	public void restaurar(ArrayList<Categoria> anteriores) { categorias.clear(); categorias.addAll(anteriores); }
 
-	public DatosCategoria() {
+	public DatosCategoria(Repositorio<Categoria> repositorio) {
+		this.repositorio = repositorio;
 
 		recuperar();
 
@@ -24,6 +26,7 @@ public class DatosCategoria {
 			categorias.add(new Categoria("Novela"));
 			categorias.add(new Categoria("Romance"));
 
+			for (Categoria categoria : categorias) asignarCodigo(categoria);
 			guardar();
 		}
 	}
@@ -37,8 +40,16 @@ public class DatosCategoria {
 	}
 
 	public String agregar(Categoria cat) {
+		asignarCodigo(cat);
 		categorias.add(cat);
 		return "Registro de categoría agregado";
+	}
+
+	private void asignarCodigo(Categoria categoria) {
+		if (categoria.getCodCategoria() == null || categoria.getCodCategoria().isBlank()) {
+			categoria.setCodCategoria(Codigos.siguiente("C", 0, 10,
+					categorias.stream().map(Categoria::getCodCategoria).filter(java.util.Objects::nonNull).toList()));
+		}
 	}
 
 	public String actualizar(Categoria reg) {
@@ -74,7 +85,7 @@ public class DatosCategoria {
 
 	public String obtenerCodCategoria(String nombre) {
 		for (int i = 0; i < longitud(); i++) {
-			if (obtener(i).getNombre() == nombre) {
+			if (obtener(i).getNombre().equals(nombre)) {
 				return obtener(i).getCodCategoria();
 			}
 		}
@@ -102,55 +113,13 @@ public class DatosCategoria {
 	}
 
 	public String guardar() {
-
-		String mensaje = "";
-
-		if (longitud() == 0) {
-
-			mensaje = "Registre una categoría para guardarlo";
-
-		} else {
-			try {
-
-				PrintWriter categoria = new PrintWriter(new FileWriter("datos\\categorias.txt"));
-
-				for (int i = 0; i < longitud(); i++) {
-
-					Categoria c = obtener(i);
-
-					categoria.println(c.getCodCategoria() + ";" + c.getNombre());
-				}
-
-				categoria.close();
-
-				mensaje = "Se ha guardado:" + longitud() + " registros de categoria";
-
-			} catch (Exception ex) {
-				mensaje = ex.getMessage();
-			}
-		}
-		return mensaje;
+		repositorio.guardar(new ArrayList<>(categorias));
+		return "Se han guardado " + categorias.size() + " registros de categorías";
 	}
 
 	public void recuperar() {
+		ArrayList<Categoria> cargados = repositorio.cargar();
 		categorias.clear();
-		try {
-
-			BufferedReader categoria = new BufferedReader(new FileReader("datos\\categorias.txt"));
-			String linea;
-
-			while ((linea = categoria.readLine()) != null) {
-
-				String[] arreglo = linea.split(";");
-
-				Categoria c = new Categoria(arreglo[0], arreglo[1]);
-
-				categorias.add(c);
-			}
-
-			categoria.close();
-		} catch (Exception ex) {
-			return;
-		}
+		categorias.addAll(cargados);
 	}
 }

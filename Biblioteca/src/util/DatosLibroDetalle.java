@@ -6,7 +6,10 @@ import clases.Libro;
 
 public class DatosLibroDetalle {
 
-	public ArrayList<DetalleLibro> detalleLibros = new ArrayList<>();
+	private final ArrayList<DetalleLibro> detalleLibros = new ArrayList<>();
+
+	public ArrayList<DetalleLibro> listar() { return new ArrayList<>(detalleLibros); }
+	public void limpiar() { detalleLibros.clear(); }
 
 	public int longitud() {
 		return detalleLibros.size();
@@ -28,7 +31,7 @@ public class DatosLibroDetalle {
 		for (int i = 0; i < longitud(); i++) {
 			DetalleLibro dl = obtener(i);
 
-			if (dl.getLibro().getCodLibro() == l.getCodLibro()) {
+			if (dl.getLibro().getCodLibro().equals(l.getCodLibro())) {
 				dl.setCantidad(dl.getCantidad() + 1);
 				return;
 			}
@@ -41,7 +44,7 @@ public class DatosLibroDetalle {
 		for (int i = 0; i < longitud(); i++) {
 			DetalleLibro dl = obtener(i);
 
-			if (dl.getLibro().getCodLibro() == l.getCodLibro()) {
+			if (dl.getLibro().getCodLibro().equals(l.getCodLibro())) {
 				if (dl.getCantidad() <= 1) {
 					detalleLibros.remove(i);
 				} else {

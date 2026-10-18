@@ -2,16 +2,9 @@ package clases;
 
 public class Usuario {
 
-	public String codUser,nomUser,dniUser,emailUser,fonoUser, estadoUser;
-	private static int correlativo;
-	
-	static {
-		correlativo=1000;
-	}
+	private String codUser, nomUser, dniUser, emailUser, fonoUser, estadoUser;
 	
 	public Usuario(String nomUser, String dniUser, String emailUser , String fonoUser, String estadoUser) {
-		correlativo+=1;
-		this.codUser="U"+correlativo;
 		this.nomUser = nomUser;
 		this.dniUser = dniUser;
 		this.emailUser = emailUser;
@@ -29,20 +22,25 @@ public class Usuario {
 		this.fonoUser = fonoUser;
 		this.estadoUser = estadoUser;
 		
-		// Actualizamos el correlativo basándonos en el código existente (ej. U1012 -> toma el 1012)
-				try {
-					int num = Integer.parseInt(codUser.substring(1));
-					if (num > correlativo) {
-						correlativo = num;
-					}
-				} catch (Exception e) {// Por si hay algún formato distinto
-				}
 			}
 		
 	
 	public Usuario() {
 	
 	}
+
+	public String getCodUser() { return codUser; }
+	public void setCodUser(String codUser) { this.codUser = codUser; }
+	public String getNomUser() { return nomUser; }
+	public void setNomUser(String nomUser) { this.nomUser = nomUser; }
+	public String getDniUser() { return dniUser; }
+	public void setDniUser(String dniUser) { this.dniUser = dniUser; }
+	public String getEmailUser() { return emailUser; }
+	public void setEmailUser(String emailUser) { this.emailUser = emailUser; }
+	public String getFonoUser() { return fonoUser; }
+	public void setFonoUser(String fonoUser) { this.fonoUser = fonoUser; }
+	public String getEstadoUser() { return estadoUser; }
+	public void setEstadoUser(String estadoUser) { this.estadoUser = estadoUser; }
 
 	@Override
 	public String toString() {

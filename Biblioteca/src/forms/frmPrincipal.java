@@ -1,49 +1,35 @@
 package forms;
 
-import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.MaskFormatter;
 
-import clases.DetallePrestamo;
 import clases.Libro;
 import clases.Prestamo;
 import clases.Usuario;
 import colecciones.*;
-import util.DatosLibroDetalle;
 import util.DetalleLibro;
+import app.BibliotecaContexto;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import java.awt.event.MouseListener;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.awt.event.MouseEvent;
-import javax.swing.UIManager;
 import javax.swing.JLabel;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
 
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.awt.Image;
 
-import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
 import java.awt.event.ActionListener;
@@ -56,68 +42,40 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 
-	/* publicar todos los arreglos de alcance static */
-	public static DatosUsuario usuarios = new DatosUsuario();
-	public static DatosLibro dataLibro = new DatosLibro();
-	public static DatosCategoria dataCategoria = new DatosCategoria();
-	public static DatosPrestamo dataPrestamo = new DatosPrestamo();
-
-	public static DatosLibroDetalle agregados = new DatosLibroDetalle();
-
-	public static DatosDetallePrestamo detalles = new DatosDetallePrestamo();
+	private final BibliotecaContexto contexto;
 
 	private JMenuBar menuBar;
 	private JMenu mnMantenimiento;
 	private JMenuItem mntmUsuario;
 	private JMenuItem mntmCategoria;
 	private JMenuItem mntmLibro;
+	private JMenuItem mntmAutor;
 	private JLabel lblCabecera;
-	private static JTextField txtBusqueda;
+	private JTextField txtBusqueda;
 	private JButton btnBuscar;
 	private JScrollPane scrollPane;
-	private static JPanel panelEstanteria;
+	private JPanel panelEstanteria;
 	private JComboBox<Usuario> cbxUsuario;
 	private JLabel lblNewLabel;
 	private JLabel lblNewLabel_1;
 	private JFormattedTextField txtFechaPrestamo;
 	private JLabel lblNewLabel_2;
 	private JFormattedTextField txtFechaDevolucion;
-	private static JButton btnEjecutarPrestamo;
+	private JButton btnEjecutarPrestamo;
 	private JScrollPane scrollPane_1;
 	private JLabel lblNewLabel_3;
-	private static JPanel panelAgregado;
-	private static JLabel lblContadorAgregado;
+	private JPanel panelAgregado;
+	private JLabel lblContadorAgregado;
 
 	public LocalDate hoy = LocalDate.now();
 	private JMenu mnProceso;
 	private JMenuItem mntmEntregaPrestamo;
 
 	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					frmPrincipal frame = new frmPrincipal();
-					frame.setLocationRelativeTo(null);
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
 	 * Create the frame.
 	 */
-	public frmPrincipal() {
+	public frmPrincipal(BibliotecaContexto contexto) {
+		this.contexto = contexto;
 		setResizable(false);
 		setTitle("Biblioteca");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -144,6 +102,9 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		mntmLibro.addActionListener(e -> mostrarMantenimientoLibros());
 
 		mnMantenimiento.add(mntmLibro);
+		mntmAutor = new JMenuItem("Autor");
+		mnMantenimiento.add(mntmAutor);
+		mntmAutor.addActionListener(e -> mostrarMantenimientoAutores());
 
 		mnProceso = new JMenu("Proceso");
 		menuBar.add(mnProceso);
@@ -262,153 +223,72 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	}
 
 	public void mostrarMantenimientoLibros() {
-		frmLibro libro = new frmLibro();
+		frmLibro libro = new frmLibro(contexto, () -> cargarRepisa(""));
 		libro.setLocationRelativeTo(null);
 		libro.setVisible(true);
 	}
 
+	public void mostrarMantenimientoAutores() {
+		frmAutor autor = new frmAutor(contexto, () -> cargarRepisa(""));
+		autor.setLocationRelativeTo(null);
+		autor.setVisible(true);
+	}
+
 	public void mostrarMatenimientoUsuarios() {
-		frmUsuario usuario = new frmUsuario();
+		frmUsuario usuario = new frmUsuario(contexto, this::agregarUsuariosCombo);
 		usuario.setLocationRelativeTo(null);
 		usuario.setVisible(true);
 	}
 
 	public void mostrarMatenimientoCategorias() {
-		frmCategoria categoria = new frmCategoria();
+		frmCategoria categoria = new frmCategoria(contexto);
 		categoria.setLocationRelativeTo(null);
 		categoria.setVisible(true);
 	}
 
-	public static void cargarRepisa(String buscar) {
+	public void cargarRepisa(String buscar) {
 		panelEstanteria.removeAll();
-		var filtroLibro = dataLibro.buscar(txtBusqueda.getText());
+		var filtroLibro = contexto.libros().buscar(buscar);
 
 		for (int i = 0; i < filtroLibro.size(); i++) {
-			panelEstanteria.add(cardLibro(filtroLibro.get(i)));
+			panelEstanteria.add(TarjetasLibro.catalogo(filtroLibro.get(i), this::agregarLibro));
 		}
 
 		panelEstanteria.revalidate();
 		panelEstanteria.repaint();
 	}
 
-	public static JPanel cardLibro(Libro libro) {
-		JPanel card = new JPanel();
-		card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-		card.setPreferredSize(new Dimension(220, 380));
-		card.setBackground(new Color(240, 220, 200)); // Ajuste de color al card
-		card.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-		ImageIcon original = new ImageIcon(libro.getRutaPortada());
-		Image scale = original.getImage().getScaledInstance(160, 200, Image.SCALE_SMOOTH);
-		JLabel img = new JLabel(new ImageIcon(scale));
-		img.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		JLabel titulo = new JLabel(libro.getTitulo());
-		titulo.setForeground(Color.BLACK);
-		titulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
-		titulo.setPreferredSize(new Dimension(220, 55));
-		titulo.setMinimumSize(new Dimension(200, 55));
-		titulo.setMaximumSize(new Dimension(200, 55));
-		titulo.setHorizontalAlignment(SwingConstants.CENTER);
-		titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		JLabel autor = new JLabel(libro.getAutor());
-		autor.setForeground(Color.GRAY);
-		autor.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		autor.setPreferredSize(new Dimension(220, 55));
-		autor.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		JButton agregar = new JButton(" + AGREGAR ");
-		agregar.setFont(new Font("Segoe UI", Font.BOLD, 14));
-		agregar.setPreferredSize(new Dimension(123, 23));
-		agregar.setFocusPainted(false);
-		agregar.setBorder(null);
-		agregar.setBackground(Color.ORANGE);
-		agregar.setAlignmentX(Component.CENTER_ALIGNMENT);
-		agregar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		agregar.addActionListener(e -> agregarLibro(libro));
-
-		card.add(Box.createVerticalGlue());
-		card.add(img);
-		card.add(Box.createVerticalStrut(5));
-		card.add(titulo);
-		card.add(Box.createVerticalStrut(5));
-		card.add(autor);
-		card.add(Box.createVerticalStrut(5));
-		card.add(agregar);
-		card.add(Box.createVerticalGlue());
-
-		return card;
-	}
-
-	private static void libroAgregado(Libro libro, int cantidad) {
-		JPanel card = new JPanel();
-		card.setLayout(new BoxLayout(card, BoxLayout.Y_AXIS));
-		card.setPreferredSize(new Dimension(100, 200));
-		card.setBackground(new Color(240, 220, 200));
-		card.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-		ImageIcon original = new ImageIcon(libro.getRutaPortada());
-		Image scale = original.getImage().getScaledInstance(90, 110, Image.SCALE_SMOOTH);
-		JLabel img = new JLabel(new ImageIcon(scale));
-		img.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		JLabel lblCantidad = new JLabel("x" + cantidad);
-		lblCantidad.setForeground(Color.ORANGE);
-		lblCantidad.setFont(new Font("Segoe UI", Font.BOLD, 14));
-		lblCantidad.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-		JButton quitar = new JButton("- Quitar");
-		quitar.setFont(new Font("Segoe UI", Font.BOLD, 12));
-		quitar.setFocusPainted(false);
-		quitar.setBorder(null);
-		quitar.setBackground(Color.ORANGE);
-		quitar.setAlignmentX(Component.CENTER_ALIGNMENT);
-		quitar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		quitar.addActionListener(e -> removerLibro(libro));
-
-		card.add(Box.createVerticalGlue());
-		card.add(img);
-		card.add(Box.createVerticalStrut(5));
-		card.add(lblCantidad);
-		card.add(Box.createVerticalStrut(5));
-		card.add(quitar);
-		card.add(Box.createVerticalGlue());
-
-		panelAgregado.add(card);
-	}
-
-	public static void agregarLibro(Libro l) {
-		agregados.actualizarLista(l);
+	public void agregarLibro(Libro l) {
+		contexto.prestamos().seleccionar(l);
 		actualizarPanelAgregados();
 	}
 
-	public static void removerLibro(Libro l) {
-		agregados.eliminar(l);
+	public void removerLibro(Libro l) {
+		contexto.prestamos().quitar(l);
 		actualizarPanelAgregados();
 	}
 
-	private static void actualizarPanelAgregados() {
+	private void actualizarPanelAgregados() {
 		panelAgregado.removeAll();
 
-		for (int i = 0; i < agregados.longitud(); i++) {
-			Libro l = agregados.obtener(i).getLibro();
-			int cantidad = agregados.obtener(i).getCantidad();
+		for (DetalleLibro elegido : contexto.prestamos().seleccionados()) {
+			Libro l = elegido.getLibro();
+			int cantidad = elegido.getCantidad();
 
-			libroAgregado(l, cantidad);
+			panelAgregado.add(TarjetasLibro.seleccionado(l, cantidad, this::removerLibro));
 		}
 
 		updateAgregados();
 	}
 
-	public static void updateAgregados() {
+	public void updateAgregados() {
 
 		int total = 0;
 
-		for (int i = 0; i < agregados.longitud(); i++) {
-			total = total + agregados.obtener(i).getCantidad();
-		}
-		if (agregados.longitud() != 0) {
+		total = contexto.prestamos().cantidadSeleccionada();
+		if (total != 0) {
 			btnEjecutarPrestamo.setEnabled(true);
 		} else {
 			btnEjecutarPrestamo.setEnabled(false);
@@ -422,8 +302,8 @@ public class frmPrincipal extends JFrame implements ActionListener {
 
 	public void agregarUsuariosCombo() {
 		cbxUsuario.removeAll();
-		for (int i = 0; i < usuarios.longitud(); i++) {
-			cbxUsuario.addItem(usuarios.obtener(i));
+		for (Usuario usuario : contexto.usuarios().listar()) {
+			cbxUsuario.addItem(usuario);
 		}
 	}
 
@@ -464,38 +344,27 @@ public class frmPrincipal extends JFrame implements ActionListener {
 			LocalDate fechaPrestamo = LocalDate.parse(fechaPrest, formatter);
 			LocalDate fechaDevolucion = LocalDate.parse(fechaDev, formatter);
 
-			Prestamo p = new Prestamo(codUsuario.codUser, fechaPrestamo, fechaDevolucion);
+			Prestamo p = contexto.prestamos().registrar(codUsuario, fechaPrestamo, fechaDevolucion);
 
-			String codPrestamo = frmPrincipal.dataPrestamo.agregar(p);
-
-			for (int i = 0; i < agregados.longitud(); i++) {
-				DetalleLibro a = agregados.obtener(i);
-
-				detalles.agregar(a.getLibro().getCodLibro(), codPrestamo, a.getCantidad());
-			}
-			
-			frmBoleta boleta = new frmBoleta(p);
+			frmBoleta boleta = new frmBoleta(contexto, p, this::limpiarAgregados);
 			boleta.setLocationRelativeTo(null);
 			boleta.setVisible(true);
 			
-			dataPrestamo.guardar();
-			detalles.guardar();
-
-			agregados.detalleLibros.clear();
 
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(null, ex.getMessage());
 		}
 	}
 
-	public static void limpiarAgregados() {
+	public void limpiarAgregados() {
+		contexto.prestamos().limpiarSeleccion();
 		panelAgregado.removeAll();
 		panelAgregado.revalidate();
 		panelAgregado.repaint();
 		lblContadorAgregado.setText("");
 	}
 	protected void actionPerformedMntmEntregaPrestamo(ActionEvent e) {
-		frmListaPrestamo listaPrestamo = new frmListaPrestamo();
+		frmListaPrestamo listaPrestamo = new frmListaPrestamo(contexto, this::limpiarAgregados);
 		listaPrestamo.setLocationRelativeTo(null);
 		listaPrestamo.setVisible(true);
 	}

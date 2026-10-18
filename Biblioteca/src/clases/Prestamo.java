@@ -9,15 +9,8 @@ public class Prestamo {
 	LocalDate fechaDevolucion;
 	String estado;
 
-	private static int correlativo;
-
-	static {
-		correlativo = 0;
-	}
 
 	public Prestamo(String codUsuario, LocalDate fechaPrestamo, LocalDate fechaDevolucion) {
-		correlativo += 10;
-		this.codPrestamo = "P" + correlativo;
 		this.codUsuario = codUsuario;
 		this.fechaPrestamo = fechaPrestamo;
 		this.fechaDevolucion = fechaDevolucion;
@@ -28,7 +21,6 @@ public class Prestamo {
 		this.codUsuario = codUsuario;
 		this.fechaPrestamo = fechaPrestamo;
 		this.fechaDevolucion = fechaDevolucion;
-		correlativo += 10;
 	}
 
 	public Prestamo() {

@@ -4,19 +4,12 @@ public class Libro {
 	private int anioPublicacion, cantidadTotal, cantidadDisponible;
 	private String codLibro, codCategoria, titulo, autor, isnb, rutaPortada;
 
-	private static int correlativo;
-
-	static {
-		correlativo = 0;
-	}
 
 	public Libro() {
 	}
 
 	public Libro(String titulo, String autor, String isnb, String codCategoria, int anioPublicacion,
 			int cantidadDisponible, int cantidadTotal, String rutaPortada) {
-		correlativo += 10;
-		this.codLibro = "L" + correlativo;
 		this.titulo = titulo;
 		this.autor = autor;
 		this.isnb = isnb;
@@ -38,7 +31,6 @@ public class Libro {
 		this.cantidadDisponible = cantidadDisponible;
 		this.cantidadTotal = cantidadTotal;
 		this.rutaPortada = rutaPortada;
-		correlativo += 10;
 	}
 
 	public int getAnioPublicacion() {

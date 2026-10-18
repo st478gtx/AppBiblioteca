@@ -1,12 +1,7 @@
 package forms;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 
-import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import java.awt.Color;
@@ -17,10 +12,13 @@ import javax.swing.table.DefaultTableModel;
 
 import clases.Prestamo;
 import clases.Usuario;
+import app.BibliotecaContexto;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseEvent;
 
 public class frmListaPrestamo extends JDialog implements MouseListener {
+	private final BibliotecaContexto contexto;
+	private final Runnable limpiarSeleccion;
 
 	private static final long serialVersionUID = 1L;
 	private JLabel lblcabecera;
@@ -28,19 +26,11 @@ public class frmListaPrestamo extends JDialog implements MouseListener {
 	private JTable tbPrestamo;
 	
 	/**
-	 * Launch the application.
-	 */
-	/*
-	 * public static void main(String[] args) { try { frmListaPrestamo dialog = new
-	 * frmListaPrestamo();
-	 * dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-	 * dialog.setVisible(true); } catch (Exception e) { e.printStackTrace(); } }
-	 */
-
-	/**
 	 * Create the dialog.
 	 */
-	public frmListaPrestamo() {
+	public frmListaPrestamo(BibliotecaContexto contexto, Runnable limpiarSeleccion) {
+		this.contexto = contexto;
+		this.limpiarSeleccion = limpiarSeleccion;
 		setResizable(false);
 		setBounds(100, 100, 669, 555);
 		getContentPane().setLayout(null);
@@ -74,8 +64,7 @@ public class frmListaPrestamo extends JDialog implements MouseListener {
 		DefaultTableModel modelo = (DefaultTableModel) tbPrestamo.getModel();
 		modelo.setRowCount(0);
 
-		for (int i = 0; i < frmPrincipal.dataPrestamo.longitud(); i++) {
-			Prestamo p = frmPrincipal.dataPrestamo.obtener(i);
+		for (Prestamo p : contexto.prestamos().listar()) {
 
 			Object[] fila = { p.getCodPrestamo(), p.getCodUsuario(), obtenerNombreUsuario(p.getCodUsuario()),
 					p.getFechaPrestamo(), p.getFechaDevolucion() };
@@ -85,8 +74,8 @@ public class frmListaPrestamo extends JDialog implements MouseListener {
 	}
 
 	public String obtenerNombreUsuario(String codUsuario) {
-		Usuario u = frmPrincipal.usuarios.buscarPorCodigoODni(codUsuario);
-		return u.nomUser;
+		Usuario u = contexto.usuarios().buscar(codUsuario);
+		return u == null ? "Usuario no encontrado" : u.getNomUser();
 	}
 	public void mouseClicked(MouseEvent e) {
 		if (e.getSource() == tbPrestamo) {
@@ -105,9 +94,9 @@ public class frmListaPrestamo extends JDialog implements MouseListener {
 		int i = tbPrestamo.getSelectedRow();
 		
 		String codPrestamo = tbPrestamo.getValueAt(i, 0).toString();
-		Prestamo p = frmPrincipal.dataPrestamo.obtener(codPrestamo);	
+		Prestamo p = contexto.prestamos().obtener(codPrestamo);
 		
-		frmBoleta boleta = new frmBoleta(p);
+		frmBoleta boleta = new frmBoleta(contexto, p, limpiarSeleccion);
 		boleta.setLocationRelativeTo(null);
 		boleta.setVisible(true);
 	}

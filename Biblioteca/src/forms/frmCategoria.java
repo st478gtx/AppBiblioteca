@@ -1,18 +1,14 @@
 package forms;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import clases.Categoria;
-import clases.Libro;
-import colecciones.DatosCategoria;
+import app.BibliotecaContexto;
+import service.CategoriaService;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -22,7 +18,6 @@ import java.awt.Color;
 import java.awt.SystemColor;
 import java.awt.Cursor;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
 
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -50,25 +45,13 @@ public class frmCategoria extends JDialog implements ActionListener, MouseListen
 	private JTable tbCategoria;
 	private DefaultTableModel modelo;
 
-	public DatosCategoria dataCategoria = frmPrincipal.dataCategoria;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			frmCategoria dialog = new frmCategoria();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	private final CategoriaService dataCategoria;
 
 	/**
 	 * Create the dialog.
 	 */
-	public frmCategoria() {
+	public frmCategoria(BibliotecaContexto contexto) {
+		this.dataCategoria = contexto.categorias();
 		setTitle("Mantenimiento categoria");
 		setBounds(100, 100, 573, 330);
 		getContentPane().setLayout(null);
@@ -177,7 +160,7 @@ public class frmCategoria extends JDialog implements ActionListener, MouseListen
 		modelo = (DefaultTableModel) tbCategoria.getModel();
 		modelo.setRowCount(0);
 
-		cargarDataTabla(dataCategoria.categorias);
+		cargarDataTabla(dataCategoria.listar());
 	}
 
 	protected void actionPerformedBtnAgregar(ActionEvent e) {
@@ -189,7 +172,6 @@ public class frmCategoria extends JDialog implements ActionListener, MouseListen
 
 			JOptionPane.showMessageDialog(null, mensaje);
 
-			dataCategoria.guardar();
 
 			cargarData();
 
@@ -211,7 +193,6 @@ public class frmCategoria extends JDialog implements ActionListener, MouseListen
 			String mensaje = dataCategoria.actualizar(c);
 			JOptionPane.showMessageDialog(null, mensaje);
 
-			dataCategoria.guardar();
 
 			cargarData();
 
@@ -229,11 +210,10 @@ public class frmCategoria extends JDialog implements ActionListener, MouseListen
 	protected void actionPerformedBtnEliminar(ActionEvent e) {
 
 		try {
-			String mensaje = dataCategoria.remover(txtCodigo.getText());
+			String mensaje = dataCategoria.eliminar(txtCodigo.getText());
 
 			JOptionPane.showMessageDialog(null, mensaje);
 
-			dataCategoria.guardar();
 
 			cargarData();
 
@@ -283,7 +263,6 @@ public class frmCategoria extends JDialog implements ActionListener, MouseListen
 
 		for (int i = 0; i < data.size(); i++) {
 			Categoria l = data.get(i);
-			String c = dataCategoria.obtenerNombreCategoria(l.getCodCategoria());
 
 			Object[] fila = { l.getCodCategoria(), l.getNombre() };
 			modelo.addRow(fila);
