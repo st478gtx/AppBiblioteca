@@ -1,6 +1,0 @@
-flowchart LR
-  U[Usuarios: Guardar datos] --> W1[Escritura individual] --> F1[usuarios.txt]
-  C[Categorías: cada operación] --> W2[Escritura individual] --> F2[categorias.txt]
-  A[Autores y libros: cada operación] --> T1[TransaccionArchivos.ejecutarAutores] --> F3[autores.txt, libroAutor.txt, libros.txt]
-  P[Préstamos: Realizar préstamo] --> T2[TransaccionArchivos.ejecutar] --> F4[prestamos.txt, detallePrestamo.txt, libros.txt]
-  S[Arranque] --> R[recuperarPendiente: restaura respaldos si hay marcador]
