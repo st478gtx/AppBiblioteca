@@ -60,6 +60,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	public static DatosUsuario usuarios = new DatosUsuario();
 	public static DatosLibro dataLibro = new DatosLibro();
 	public static DatosCategoria dataCategoria = new DatosCategoria();
+	public static DatosAutor dataAutor = new DatosAutor();
 	public static DatosPrestamo dataPrestamo = new DatosPrestamo();
 
 	public static DatosLibroDetalle agregados = new DatosLibroDetalle();
@@ -71,6 +72,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	private JMenuItem mntmUsuario;
 	private JMenuItem mntmCategoria;
 	private JMenuItem mntmLibro;
+	private JMenuItem mntmAutor;
 	private JLabel lblCabecera;
 	private static JTextField txtBusqueda;
 	private JButton btnBuscar;
@@ -144,6 +146,10 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		mntmLibro.addActionListener(e -> mostrarMantenimientoLibros());
 
 		mnMantenimiento.add(mntmLibro);
+
+		mntmAutor = new JMenuItem("Autor");
+		mntmAutor.addActionListener(e -> mostrarMantenimientoAutores());
+		mnMantenimiento.add(mntmAutor);
 
 		mnProceso = new JMenu("Proceso");
 		menuBar.add(mnProceso);
@@ -277,6 +283,12 @@ public class frmPrincipal extends JFrame implements ActionListener {
 		frmCategoria categoria = new frmCategoria();
 		categoria.setLocationRelativeTo(null);
 		categoria.setVisible(true);
+	}
+
+	public void mostrarMantenimientoAutores() {
+		frmAutor autor = new frmAutor();
+		autor.setLocationRelativeTo(null);
+		autor.setVisible(true);
 	}
 
 	public static void cargarRepisa(String buscar) {
