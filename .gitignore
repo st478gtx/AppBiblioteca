@@ -12,3 +12,4 @@ target/
 .idea/runConfigurations/*
 !.idea/runConfigurations/Biblioteca.xml
 out/
+docs/
