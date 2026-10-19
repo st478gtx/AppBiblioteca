@@ -91,7 +91,7 @@ public class frmBoleta extends JDialog implements ActionListener {
 		boleta.append(String.format("%-15s %s%n", "Usuario:", obtenerNombreUsuario(prestamo.getCodUsuario())));
 		boleta.append(String.format("%-15s %s%n", "Fecha prestamo:", prestamo.getFechaPrestamo().format(formato)));
 		boleta.append(String.format("%-15s %s%n", "Fecha devolucion:", prestamo.getFechaDevolucion().format(formato)));
-		// boleta.append(String.format("%-15s %s%n", "Estado:", prestamo.estado));
+		//boleta.append(String.format("%-15s %s%n", "Estado:", prestamo.estado));
 
 		boleta.append("----------------------------------------\n");
 		boleta.append("DETALLE DE LIBROS\n");

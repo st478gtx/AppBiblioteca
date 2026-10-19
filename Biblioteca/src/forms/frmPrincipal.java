@@ -465,6 +465,14 @@ public class frmPrincipal extends JFrame implements ActionListener {
 			LocalDate fechaDevolucion = LocalDate.parse(fechaDev, formatter);
 
 			Prestamo p = new Prestamo(codUsuario.codUser, fechaPrestamo, fechaDevolucion);
+			
+			if(frmPrincipal.usuarios.usuarioPenalizado(codUsuario.codUser)) {
+				JOptionPane.showMessageDialog(null,"!Usuario penalizado!");
+				agregados.detalleLibros.clear();
+				limpiarAgregados();
+				return;
+			}
+			
 
 			String codPrestamo = frmPrincipal.dataPrestamo.agregar(p);
 
@@ -472,7 +480,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 				DetalleLibro a = agregados.obtener(i);
 
 				detalles.agregar(a.getLibro().getCodLibro(), codPrestamo, a.getCantidad());
-			}
+			}			
 			
 			frmBoleta boleta = new frmBoleta(p);
 			boleta.setLocationRelativeTo(null);
