@@ -25,6 +25,24 @@ public class DatosAutor {
 		return autores.get(i);
 	}
 
+	public Autor obtenerPorCodigo(String codigo) {
+		if (codigo != null) {
+			for (Autor autor : autores) {
+				if (autor.getCodAutor().equalsIgnoreCase(codigo)) return autor;
+			}
+		}
+		return null;
+	}
+
+	public Autor obtenerPorNombre(String nombre) {
+		if (nombre != null) {
+			for (Autor autor : autores) {
+				if (autor.getNombre().equalsIgnoreCase(nombre.trim())) return autor;
+			}
+		}
+		return null;
+	}
+
 	public ArrayList<Autor> buscar(String texto) {
 		ArrayList<Autor> encontrados = new ArrayList<>();
 		String filtro = texto == null ? "" : texto.trim().toLowerCase();
@@ -64,7 +82,11 @@ public class DatosAutor {
 		throw new IllegalArgumentException("Autor no encontrado");
 	}
 
-	public String remover(String codAutor) {
+	public String remover(String codAutor, DatosLibro dataLibro) {
+		dataLibro.vincularAutores(this);
+		if (dataLibro.tieneLibrosDeAutor(codAutor)) {
+			throw new IllegalArgumentException("No se puede eliminar el autor porque tiene libros asociados");
+		}
 		for (int i = 0; i < longitud(); i++) {
 			if (obtener(i).getCodAutor().equalsIgnoreCase(codAutor)) {
 				autores.remove(i);

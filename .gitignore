@@ -6,3 +6,4 @@ target/
 .settings/
 *.class
 .idea/
+docs/

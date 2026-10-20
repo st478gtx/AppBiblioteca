@@ -128,13 +128,16 @@ public class frmAutor extends JDialog implements ActionListener {
 			if (origen == btnAgregar) {
 				mensaje = dataAutor.agregar(txtNombre.getText());
 			} else if (origen == btnActualizar) {
+				frmPrincipal.dataLibro.vincularAutores(dataAutor);
 				mensaje = dataAutor.actualizar(new Autor(txtCodigo.getText(), txtNombre.getText()));
+				frmPrincipal.dataLibro.actualizarNombreAutor(dataAutor.obtenerPorCodigo(txtCodigo.getText()));
 			} else if (origen == btnEliminar) {
-				mensaje = dataAutor.remover(txtCodigo.getText());
+				mensaje = dataAutor.remover(txtCodigo.getText(), frmPrincipal.dataLibro);
 			} else {
 				return;
 			}
 			dataAutor.guardar();
+			if (origen == btnActualizar) frmPrincipal.dataLibro.guardar();
 			cargarData(dataAutor.autores);
 			limpiar();
 			JOptionPane.showMessageDialog(this, mensaje);

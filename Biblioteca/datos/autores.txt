@@ -1,0 +1,9 @@
+A10;Gabriel García Márquez
+A20;Antoine de Saint-Exupéry
+A30;Miguel de Cervantes
+A40;George Orwell
+A50;Jane Austen
+A60;Mario Vargas Llosa
+A70;J. K. Rowling
+A80;J. R. R. Tolkien
+A90;Ray Bradbury

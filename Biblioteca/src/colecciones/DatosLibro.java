@@ -8,6 +8,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 
 import clases.Categoria;
+import clases.Autor;
 import clases.Libro;
 
 public class DatosLibro {
@@ -61,6 +62,32 @@ public class DatosLibro {
 
 	public int longitud() {
 		return libros.size();
+	}
+
+	// Los registros de nueve campos conservan su nombre; se vinculan si existe un autor con ese nombre.
+	public void vincularAutores(DatosAutor dataAutor) {
+		for (Libro libro : libros) {
+			if (libro.getCodAutor() == null || libro.getCodAutor().isBlank()) {
+				Autor autor = dataAutor.obtenerPorNombre(libro.getAutor());
+				if (autor != null) libro.setCodAutor(autor.getCodAutor());
+			}
+		}
+	}
+
+	public boolean tieneLibrosDeAutor(String codAutor) {
+		if (codAutor == null || codAutor.isBlank()) return false;
+		for (Libro libro : libros) {
+			if (codAutor.equalsIgnoreCase(libro.getCodAutor())) return true;
+		}
+		return false;
+	}
+
+	public void actualizarNombreAutor(Autor autor) {
+		for (Libro libro : libros) {
+			if (autor.getCodAutor().equalsIgnoreCase(libro.getCodAutor())) {
+				libro.setAutor(autor.getNombre());
+			}
+		}
 	}
 
 	public ArrayList<Libro> buscar(String busqueda) {
@@ -136,7 +163,8 @@ public class DatosLibro {
 
 					libro.println(l.getCodLibro() + ";" + l.getTitulo() + ";" + l.getAutor() + ";" + l.getIsnb() + ";"
 							+ l.getCodCategoria() + ";" + l.getAnioPublicacion() + ";" + l.getCantidadDisponible() + ";"
-							+ l.getCantidadTotal() + ";" + l.getRutaPortada());
+							+ l.getCantidadTotal() + ";" + l.getRutaPortada()
+							+ (l.getCodAutor() == null || l.getCodAutor().isBlank() ? "" : ";" + l.getCodAutor()));
 				}
 
 				libro.close();
@@ -159,11 +187,12 @@ public class DatosLibro {
 
 			while ((linea = libro.readLine()) != null) {
 
-				String[] arreglo = linea.split(";");
+				String[] arreglo = linea.split(";", -1);
 
 				Libro l = new Libro(arreglo[0], arreglo[1], arreglo[2], arreglo[3], arreglo[4],
 						Integer.parseInt(arreglo[5]), Integer.parseInt(arreglo[6]), Integer.parseInt(arreglo[7]),
 						arreglo[8]);
+				if (arreglo.length > 9 && !arreglo[9].isBlank()) l.setCodAutor(arreglo[9]);
 
 				libros.add(l);
 			}

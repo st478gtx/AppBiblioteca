@@ -2,7 +2,7 @@ package clases;
 
 public class Libro {
 	private int anioPublicacion, cantidadTotal, cantidadDisponible;
-	private String codLibro, codCategoria, titulo, autor, isnb, rutaPortada;
+	private String codLibro, codCategoria, codAutor, titulo, autor, isnb, rutaPortada;
 
 	private static int correlativo;
 
@@ -79,6 +79,14 @@ public class Libro {
 
 	public void setAutor(String autor) {
 		this.autor = autor;
+	}
+
+	public String getCodAutor() {
+		return codAutor;
+	}
+
+	public void setCodAutor(String codAutor) {
+		this.codAutor = codAutor;
 	}
 
 	public String getIsnb() {
