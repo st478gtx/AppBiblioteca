@@ -6,3 +6,5 @@ target/
 .settings/
 *.class
 .idea/
+docs/
+AppBiblioteca.iml

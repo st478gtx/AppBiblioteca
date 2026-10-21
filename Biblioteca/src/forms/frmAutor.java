@@ -128,13 +128,23 @@ public class frmAutor extends JDialog implements ActionListener {
 			if (origen == btnAgregar) {
 				mensaje = dataAutor.agregar(txtNombre.getText());
 			} else if (origen == btnActualizar) {
+				frmPrincipal.dataLibro.vincularAutores(dataAutor);
 				mensaje = dataAutor.actualizar(new Autor(txtCodigo.getText(), txtNombre.getText()));
+				frmPrincipal.dataLibro.actualizarNombreAutor(dataAutor.obtenerPorCodigo(txtCodigo.getText()));
 			} else if (origen == btnEliminar) {
-				mensaje = dataAutor.remover(txtCodigo.getText());
+				if (txtCodigo.getText().isBlank()) {
+					throw new IllegalArgumentException("Seleccione un autor para eliminar");
+				}
+				int respuesta = JOptionPane.showConfirmDialog(this,
+						"¿Desea eliminar al autor " + txtNombre.getText() + "?",
+						"Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if (respuesta != JOptionPane.YES_OPTION) return;
+				mensaje = dataAutor.remover(txtCodigo.getText(), frmPrincipal.dataLibro);
 			} else {
 				return;
 			}
 			dataAutor.guardar();
+			if (origen == btnActualizar) frmPrincipal.dataLibro.guardar();
 			cargarData(dataAutor.autores);
 			limpiar();
 			JOptionPane.showMessageDialog(this, mensaje);

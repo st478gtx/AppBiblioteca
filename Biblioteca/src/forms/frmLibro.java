@@ -25,8 +25,10 @@ import javax.swing.border.BevelBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
+import clases.Autor;
 import clases.Categoria;
 import clases.Libro;
+import colecciones.DatosAutor;
 import colecciones.DatosCategoria;
 import colecciones.DatosLibro;
 import util.Constante;
@@ -42,6 +44,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.UIManager;
 
 public class frmLibro extends JDialog implements ActionListener, MouseListener {
@@ -54,7 +60,7 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 	private JLabel lblCategoría;
 	private JTable tbData;
 	private JTextField txtTitulo;
-	private JTextField txtAutor;
+	private JComboBox<Autor> cbxAutor;
 	private JTextField txtIsbn;
 	private JComboBox<Categoria> cbxCategoria;
 	private JLabel lblNewLabel_4;
@@ -73,6 +79,7 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 	// Cargar data de form principal
 	public DatosLibro dataLibro = frmPrincipal.dataLibro;
 	public DatosCategoria dataCategoria = frmPrincipal.dataCategoria;
+	public DatosAutor dataAutor = frmPrincipal.dataAutor;
 
 	private String rutaPortada = "";
 
@@ -141,10 +148,23 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 		getContentPane().add(txtTitulo);
 		txtTitulo.setColumns(10);
 
-		txtAutor = new JTextField();
-		txtAutor.setBounds(109, 166, 197, 20);
-		getContentPane().add(txtAutor);
-		txtAutor.setColumns(10);
+		cbxAutor = new JComboBox<>();
+		cbxAutor.setBounds(109, 166, 197, 22);
+		getContentPane().add(cbxAutor);
+		cbxAutor.addPopupMenuListener(new PopupMenuListener() {
+			@Override public void popupMenuWillBecomeVisible(PopupMenuEvent e) { cargarAutores(); }
+			@Override public void popupMenuWillBecomeInvisible(PopupMenuEvent e) { }
+			@Override public void popupMenuCanceled(PopupMenuEvent e) { }
+		});
+		addWindowListener(new WindowAdapter() {
+			@Override public void windowActivated(WindowEvent e) {
+				cargarAutores();
+				if (modelo != null) {
+					if (txtBusqueda.getText().isBlank()) cargarData();
+					else actionPerformedBtnBuscar(null);
+				}
+			}
+		});
 
 		txtIsbn = new JTextField();
 		txtIsbn.setBounds(109, 217, 197, 20);
@@ -259,6 +279,9 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 		getContentPane().add(btnLimpiar);
 
 		cargarCategorias();
+		dataLibro.vincularAutores(dataAutor);
+		cargarAutores();
+		cbxAutor.setSelectedIndex(-1);
 		cargarData();
 	}
 
@@ -288,11 +311,10 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 
 	protected void actionPerformedBtnAgregar(ActionEvent e) {
 
-		Categoria categoria = (Categoria) cbxCategoria.getSelectedItem();
-
 		try {
+			Autor autor = autorSeleccionado();
+			Categoria categoria = (Categoria) cbxCategoria.getSelectedItem();
 			String titulo = txtTitulo.getText();
-			String autor = txtAutor.getText();
 			String isbn = txtIsbn.getText();
 			int publicacion = Integer.parseInt(txtAnioPublicacion.getText());
 			String codCategoria = categoria.getCodCategoria();
@@ -307,7 +329,8 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 				rutaPortada = Constante.SIN_IMAGEN_PORTADA;
 			}
 
-			Libro l = new Libro(titulo, autor, isbn, codCategoria, publicacion, cant, total, rutaPortada);
+			Libro l = new Libro(titulo, autor.getNombre(), isbn, codCategoria, publicacion, cant, total, rutaPortada);
+			l.setCodAutor(autor.getCodAutor());
 
 			String mensaje = dataLibro.agregar(l);
 
@@ -348,6 +371,32 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 		for (int i = 0; i < dataCategoria.longitud(); i++) {
 			cbxCategoria.addItem(dataCategoria.obtener(i));
 		}
+	}
+
+	public void cargarAutores() {
+		Autor seleccionado = (Autor) cbxAutor.getSelectedItem();
+		String codigo = seleccionado == null ? null : seleccionado.getCodAutor();
+		cbxAutor.removeAllItems();
+		for (int i = 0; i < dataAutor.longitud(); i++) cbxAutor.addItem(dataAutor.obtener(i));
+		seleccionarAutor(codigo);
+	}
+
+	private void seleccionarAutor(String codigo) {
+		cbxAutor.setSelectedIndex(-1);
+		if (codigo == null) return;
+		for (int i = 0; i < cbxAutor.getItemCount(); i++) {
+			if (codigo.equalsIgnoreCase(cbxAutor.getItemAt(i).getCodAutor())) {
+				cbxAutor.setSelectedIndex(i);
+				return;
+			}
+		}
+	}
+
+	private Autor autorSeleccionado() {
+		Autor seleccionado = (Autor) cbxAutor.getSelectedItem();
+		Autor vigente = seleccionado == null ? null : dataAutor.obtenerPorCodigo(seleccionado.getCodAutor());
+		if (vigente == null) throw new IllegalArgumentException("Seleccione un autor registrado");
+		return vigente;
 	}
 
 	public void cargarDataTabla(ArrayList<Libro> data) {
@@ -406,7 +455,20 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 
 		txtCodigo.setText(tbData.getValueAt(i, 1).toString());
 		txtTitulo.setText(tbData.getValueAt(i, 2).toString());
-		txtAutor.setText(tbData.getValueAt(i, 3).toString());
+		Libro libro = null;
+		for (Libro candidato : dataLibro.libros) {
+			if (candidato.getCodLibro().equals(txtCodigo.getText())) {
+				libro = candidato;
+				break;
+			}
+		}
+		if (libro != null) {
+			Autor autor = dataAutor.obtenerPorCodigo(libro.getCodAutor());
+			if (autor == null && (libro.getCodAutor() == null || libro.getCodAutor().isBlank())) {
+				autor = dataAutor.obtenerPorNombre(libro.getAutor());
+			}
+			seleccionarAutor(autor == null ? null : autor.getCodAutor());
+		}
 		txtIsbn.setText(tbData.getValueAt(i, 4).toString());
 
 		String nomCategoria = tbData.getValueAt(i, 5).toString();
@@ -493,12 +555,14 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 		try {
 			Libro l = new Libro();
 
+			Autor autor = autorSeleccionado();
 			Categoria categoria = (Categoria) cbxCategoria.getSelectedItem();
 
 			l.setCodLibro(txtCodigo.getText());
 			l.setRutaPortada(rutaPortada);
 			l.setTitulo(txtTitulo.getText());
-			l.setAutor(txtAutor.getText());
+			l.setAutor(autor.getNombre());
+			l.setCodAutor(autor.getCodAutor());
 			l.setIsnb(txtIsbn.getText());
 			l.setAnioPublicacion(Integer.parseInt(txtAnioPublicacion.getText()));
 			l.setCodCategoria(categoria.getCodCategoria());
@@ -508,6 +572,7 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 			if (!guardarImagen()) {
 				return;
 			}
+			l.setRutaPortada(rutaPortada);
 
 			String mensaje = dataLibro.actualizar(l);
 
@@ -534,13 +599,14 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 
 		imgAgregado.setIcon(new ImageIcon(imagen));
 		txtTitulo.setText("");
-		txtAutor.setText("");
+		cbxAutor.setSelectedIndex(-1);
 		txtIsbn.setText("");
 		cbxCategoria.setSelectedIndex(-1);
 		txtAnioPublicacion.setText("");
 		txtCantDisp.setText("");
 		txtCantidadTotal.setText("");
 		rutaPortada = "";
+		fileChooser.setSelectedFile(null);
 	}
 
 	protected void actionPerformedBtnLimpiar(ActionEvent e) {

@@ -25,6 +25,24 @@ public class DatosAutor {
 		return autores.get(i);
 	}
 
+	public Autor obtenerPorCodigo(String codigo) {
+		if (codigo != null) {
+			for (Autor autor : autores) {
+				if (autor.getCodAutor().equalsIgnoreCase(codigo)) return autor;
+			}
+		}
+		return null;
+	}
+
+	public Autor obtenerPorNombre(String nombre) {
+		if (nombre != null) {
+			for (Autor autor : autores) {
+				if (autor.getNombre().equalsIgnoreCase(nombre.trim())) return autor;
+			}
+		}
+		return null;
+	}
+
 	public ArrayList<Autor> buscar(String texto) {
 		ArrayList<Autor> encontrados = new ArrayList<>();
 		String filtro = texto == null ? "" : texto.trim().toLowerCase();
@@ -42,9 +60,9 @@ public class DatosAutor {
 		if (nombreRepetido(nombreValido, null)) {
 			throw new IllegalArgumentException("El autor ya está registrado");
 		}
-		Autor autor = new Autor(siguienteCodigo(), nombreValido);
+		Autor autor = new Autor(nombreValido);
 		autores.add(autor);
-		return "Registro de autor agregado";
+		return "Autor agregado con éxito";
 	}
 
 	public String actualizar(Autor reg) {
@@ -64,11 +82,15 @@ public class DatosAutor {
 		throw new IllegalArgumentException("Autor no encontrado");
 	}
 
-	public String remover(String codAutor) {
+	public String remover(String codAutor, DatosLibro dataLibro) {
+		dataLibro.vincularAutores(this);
+		if (dataLibro.tieneLibrosDeAutor(codAutor)) {
+			throw new IllegalArgumentException("No se puede eliminar el autor porque tiene libros asociados");
+		}
 		for (int i = 0; i < longitud(); i++) {
 			if (obtener(i).getCodAutor().equalsIgnoreCase(codAutor)) {
 				autores.remove(i);
-				return "Registro de autor eliminado";
+				return "Autor eliminado con éxito";
 			}
 		}
 		throw new IllegalArgumentException("Seleccione un autor");
@@ -100,17 +122,6 @@ public class DatosAutor {
 		} catch (IOException ex) {
 			throw new IllegalStateException("No se pudo leer autores.txt", ex);
 		}
-	}
-
-	private String siguienteCodigo() {
-		int mayor = 0;
-		for (Autor autor : autores) {
-			String codigo = autor.getCodAutor();
-			if (codigo.matches("A\\d+")) {
-				mayor = Math.max(mayor, Integer.parseInt(codigo.substring(1)));
-			}
-		}
-		return "A" + (mayor + 10);
 	}
 
 	private boolean nombreRepetido(String nombre, String codigoActual) {
