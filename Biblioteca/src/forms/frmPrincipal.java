@@ -133,18 +133,14 @@ public class frmPrincipal extends JFrame implements ActionListener {
 
 		mntmUsuario = new JMenuItem("Usuario");
 		mnMantenimiento.add(mntmUsuario);
-
 		mntmUsuario.addActionListener(e -> mostrarMatenimientoUsuarios());
 
 		mntmCategoria = new JMenuItem("Categoría");
 		mnMantenimiento.add(mntmCategoria);
-
 		mntmCategoria.addActionListener(e -> mostrarMatenimientoCategorias());
 
 		mntmLibro = new JMenuItem("Libro");
-
 		mntmLibro.addActionListener(e -> mostrarMantenimientoLibros());
-
 		mnMantenimiento.add(mntmLibro);
 
 		mntmAutor = new JMenuItem("Autor");

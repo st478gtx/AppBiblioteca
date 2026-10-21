@@ -60,7 +60,7 @@ public class DatosAutor {
 		if (nombreRepetido(nombreValido, null)) {
 			throw new IllegalArgumentException("El autor ya está registrado");
 		}
-		Autor autor = new Autor(siguienteCodigo(), nombreValido);
+		Autor autor = new Autor(nombreValido);
 		autores.add(autor);
 		return "Registro de autor agregado";
 	}
@@ -122,17 +122,6 @@ public class DatosAutor {
 		} catch (IOException ex) {
 			throw new IllegalStateException("No se pudo leer autores.txt", ex);
 		}
-	}
-
-	private String siguienteCodigo() {
-		int mayor = 0;
-		for (Autor autor : autores) {
-			String codigo = autor.getCodAutor();
-			if (codigo.matches("A\\d+")) {
-				mayor = Math.max(mayor, Integer.parseInt(codigo.substring(1)));
-			}
-		}
-		return "A" + (mayor + 10);
 	}
 
 	private boolean nombreRepetido(String nombre, String codigoActual) {
