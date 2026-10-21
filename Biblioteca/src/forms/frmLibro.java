@@ -433,6 +433,9 @@ public class frmLibro extends JDialog implements ActionListener, MouseListener {
 
 		fileChooser.setDialogTitle("Seleccionar portada");
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		
+		File carpeta = new File("imagenes/portadas");
+	    fileChooser.setCurrentDirectory(carpeta);
 
 		FileNameExtensionFilter filtro = new FileNameExtensionFilter("Imágenes (*.jpg, *.jpeg, *.png)", "jpg", "jpeg",
 				"png");
