@@ -11,3 +11,5 @@ U1010;Sofia Rios;84553001;sofir@gmail.com;981000248;Registrado
 U1011;ana lu;74521584;pa@ate.com;985632147;Registrado
 U1012;ana lu;74521584;pa@ate.com;985632147;Registrado
 U1013;ana lu;74521584;pa@ate.com;985632147;Registrado
+U1014;Lucca;55558528;lucca@aol.com;963254126;Registrado
+U1015;Juan;89652365;juan@aol.com;996523210;Registrado

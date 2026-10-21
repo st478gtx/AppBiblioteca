@@ -78,7 +78,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 	private JButton btnBuscar;
 	private JScrollPane scrollPane;
 	private static JPanel panelEstanteria;
-	private JComboBox<Usuario> cbxUsuario;
+	private static JComboBox<Usuario> cbxUsuario;
 	private JLabel lblNewLabel;
 	private JLabel lblNewLabel_1;
 	private JFormattedTextField txtFechaPrestamo;
@@ -428,7 +428,7 @@ public class frmPrincipal extends JFrame implements ActionListener {
 
 	}
 
-	public void agregarUsuariosCombo() {
+	public static void agregarUsuariosCombo() {
 		cbxUsuario.removeAll();
 		for (int i = 0; i < usuarios.longitud(); i++) {
 			cbxUsuario.addItem(usuarios.obtener(i));

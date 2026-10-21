@@ -433,7 +433,7 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 		
 		String mensaje=frmPrincipal.usuarios.guardar();
 		JOptionPane.showMessageDialog(null, mensaje);
-		
+		frmPrincipal.agregarUsuariosCombo();
 		
 	}
 	protected void actionPerformedBtnBuscar(ActionEvent e) {
