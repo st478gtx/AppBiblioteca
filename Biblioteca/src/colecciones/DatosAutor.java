@@ -62,7 +62,7 @@ public class DatosAutor {
 		}
 		Autor autor = new Autor(nombreValido);
 		autores.add(autor);
-		return "Registro de autor agregado";
+		return "Autor agregado con éxito";
 	}
 
 	public String actualizar(Autor reg) {
@@ -90,7 +90,7 @@ public class DatosAutor {
 		for (int i = 0; i < longitud(); i++) {
 			if (obtener(i).getCodAutor().equalsIgnoreCase(codAutor)) {
 				autores.remove(i);
-				return "Registro de autor eliminado";
+				return "Autor eliminado con éxito";
 			}
 		}
 		throw new IllegalArgumentException("Seleccione un autor");
