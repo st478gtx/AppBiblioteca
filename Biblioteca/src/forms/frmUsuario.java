@@ -333,7 +333,7 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 
 	    // 3. Validar que el estado sea exactamente "Registrado"
 	    if (!u.estadoUser.trim().equalsIgnoreCase("Registrado")) {
-	        JOptionPane.showMessageDialog(this, "Solo se pueden eliminar los usuarios que se encuentren en estado Registrado.", "Restricción de eliminación", JOptionPane.WARNING_MESSAGE);
+	        JOptionPane.showMessageDialog(this, "Solo se pueden eliminar los usuarios con Prestamo o Penalizado.", "Restricción de eliminación", JOptionPane.WARNING_MESSAGE);
 	        return;
 	    }
 
@@ -471,6 +471,8 @@ public class frmUsuario extends JDialog implements ActionListener, MouseListener
 	        JOptionPane.showMessageDialog(this, "No se encontró ningún usuario con el código o DNI ingresado.");
 	        limpiar(); // Limpia los campos si no existe
 	    }
-		
+	    	
 	}
+
+
 }

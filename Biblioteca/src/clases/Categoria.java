@@ -2,7 +2,7 @@ package clases;
 
 public class Categoria {
 	private String codCategoria;
-	private String nombre;
+	public String nombre;
 
 	private static int correlativo;
 

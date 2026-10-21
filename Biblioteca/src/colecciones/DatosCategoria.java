@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import clases.Categoria;
+import clases.Usuario;
 
 public class DatosCategoria {
 	public ArrayList<Categoria> categorias = new ArrayList<>();
@@ -37,9 +38,24 @@ public class DatosCategoria {
 	}
 
 	public String agregar(Categoria cat) {
+		 //Recorremos la lista para verificar si ya existe
+		for (Categoria c : categorias) {
+			if (c.nombre.equals(cat.nombre)) {
+				return "La categoria " + cat.nombre + " ya se encuentra registrado.";
+			}
+		}
+		
+		
 		categorias.add(cat);
 		return "Registro de categoría agregado";
 	}
+	
+	
+	
+	
+
+	
+	
 
 	public String actualizar(Categoria reg) {
 		for (int i = 0; i < longitud(); i++) {
