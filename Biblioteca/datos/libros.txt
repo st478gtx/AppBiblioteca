@@ -8,3 +8,4 @@ L70;Harry Potter y la piedra filosofal;J. K. Rowling;9788478884452;C20;1997;10;1
 L80;El Hobbit;J. R. R. Tolkien;9780261102217;C20;1937;4;5;imagenes/portadas/el_hobbit.jpg
 L90;Crónica de una muerte anunciada;Gabriel García Márquez;9781400034710;C40;1981;5;10;imagenes/portadas/cronica_de_una_muerte.jpg
 L100;Fahrenheit 451;Ray Bradbury;9781451678189;C10;1953;3;5;imagenes/portadas/fahrenheit_451.jpg
+L110;El susurro de la mujer ballena;anonimo;649656952614631631;C10;2026;6;10;imagenes/portadas/sin_imagen.png
